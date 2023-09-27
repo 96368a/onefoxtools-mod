@@ -2,8 +2,10 @@ package common
 
 import (
 	"fmt"
+	"github.com/labstack/gommon/log"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
+	"os"
 )
 
 type PathInfo struct {
@@ -27,6 +29,18 @@ func InitEnv() {
 	if err != nil {
 		fmt.Println("error:", err)
 		return
+	}
+	log.Info("init:", Paths)
+	if Paths.Dir != "" {
+		stat, err := os.Stat(Paths.Dir)
+		if err != nil {
+			return
+		}
+		if stat.IsDir() {
+			os.Chdir(Paths.Dir)
+		} else {
+			log.Fatal("目录不存在", Paths.Dir)
+		}
 	}
 	//os.Chdir(Paths.Dir)
 	//fmt.Println("init:", Paths)
