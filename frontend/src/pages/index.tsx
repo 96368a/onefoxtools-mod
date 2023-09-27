@@ -32,7 +32,6 @@ export default function Index() {
         return c
       })
       setConfigs(result)
-      console.log(result)
     })
   }
   async function refresh() {
@@ -50,23 +49,29 @@ export default function Index() {
   // }
 
   return (
-    <div class=' pt-4'>
+    <div class=''>
       <Search configs={configs} show={showSearch} setShow={setShowSearch} />
-      <div class="card w-full mx-2 bg-base-100 shadow-xl">
+      <div class="px-2 pt-2">
+      <div class="card w-full bg-base-100 shadow-xl">
         <div class="card-body">
+          <div class='justify-center card-title text-2xl py-2'>
+          <h1>ONE-FOX工具箱</h1>
+          </div>
           <div class="flex justify-center gap-2">
-            <input type="search" class='input input-bordered w-full max-w-xs' onfocus={() => setShowSearch(true)} />
+            <input type="search" id="search" class='input input-bordered w-full max-w-xs input-sm' onfocus={() => setShowSearch(true)} />
             <div class='flex gap-2'>
-              <button class='btn btn-success'>搜索</button>
-              <button class='btn btn-warning' onclick={refresh}>刷新</button>
+              <button class='btn btn-sm btn-success px-10' onclick={() => setShowSearch(true)}>搜索</button>
+              <button class='btn btn-sm btn-warning px-10' onclick={refresh}>刷新</button>
             </div>
           </div>
         </div>
       </div>
+      </div>
 
       {/* <button class="btn" onclick={t}>233</button> */}
       <For each={configs}>{type => (
-        <div class="card w-full my-2 bg-base-100 shadow-xl mx-2">
+        <div class="px-3">
+        <div class="card w-full my-2 bg-base-100 shadow-xl">
           <div class="card-body   items-center text-center">
             <h2 class="card-title">{type.type}</h2>
             <div class='w-full'>
@@ -80,6 +85,7 @@ export default function Index() {
               </div>
             </div>
           </div>
+        </div>
         </div>
         // <div class='shadow rounded mb-1 py-2 mx-4'>
         //   <h2 class='w-full text-center'>{type.type}</h2>

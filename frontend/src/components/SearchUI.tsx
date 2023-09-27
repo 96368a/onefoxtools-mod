@@ -25,6 +25,7 @@ export default function Search({ configs, show, setShow }: { configs: main.TypeC
         }
       }
       setSearchResults(results)
+      console.log(results)
     }
   }
 
@@ -32,18 +33,22 @@ export default function Search({ configs, show, setShow }: { configs: main.TypeC
       <div>
         <Show when={show()}>
           <div class='w-screen fixed z-1000 pt-20' onclick={() => setShow(false)}>
-            <input type="search" class="w-200 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent" placeholder="Search..."
-              value={searchString()} oninput={e => setSearchString(e.currentTarget.value) && rs()} onclick={e => e.stopPropagation()} />
+          <input type="search" class="input input-bordered w-full max-w-lg"placeholder="Search..."
+          maxlength="-1"
+          value={searchString()} onKeyUp={e => setSearchString(e.currentTarget.value) && rs()} onclick={e => e.stopPropagation()}/>
+            {/* <input type="search" class="w-200 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent" /> */}
 
             <div py-4>
               <ul class='flex flex-col gap-2'>
                 <For each={searchResults()}>
                   {
                     c => (
-                      <li class='bg-light-200 w-80 mx-auto rounded py-1 cursor-pointer' onclick={(e) => {
+                      <li class='w-80 mx-auto rounded py-1 cursor-pointer' onclick={(e) => {
                         Start(c)
                         e.stopPropagation()
-                      }}>{c.name}</li>
+                      }}>
+                        <button class="btn border">{c.name}</button>
+                        </li>
                     )
                   }
                 </For>
