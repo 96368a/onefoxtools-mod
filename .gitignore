@@ -22,3 +22,6 @@ go.work
 
 *.yml
 *.yaml
+frontend\*\*.js
+frontend\*\*.ts
+frontend\*\*.json
