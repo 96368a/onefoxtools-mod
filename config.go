@@ -45,10 +45,17 @@ func (c CONFIG) GetConfigs() []TypeConfig {
 
 func (c CONFIG) InitConfig() bool {
 	InitConfig()
+	common.InitEnv()
 	return true
 }
 
 func InitConfig() {
+	executable, err := os.Executable()
+	if err != nil {
+		return
+	}
+	dir := filepath.Dir(executable)
+	os.Chdir(dir)
 	Configs = make([]TypeConfig, 0)
 	//cmd := exec.Command("cmd", "/C", "cd")
 	//result, err := cmd.Output()
@@ -59,7 +66,7 @@ func InitConfig() {
 	//// output res.txt
 	//ioutil.WriteFile("res.txt", result, 0644)
 	// 遍历config下的yaml文件
-	err := filepath.Walk("config", func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk("config", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -93,7 +100,7 @@ func InitConfig() {
 	})
 
 	if err != nil {
-		fmt.Println("遍历文件夹出错:", err)
+		log.Fatal(err)
 	}
 	//data, err := ioutil.ReadFile("env.yml")
 	//if err != nil {
