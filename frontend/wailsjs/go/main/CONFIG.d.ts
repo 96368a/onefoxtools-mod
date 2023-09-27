@@ -4,4 +4,6 @@ import {main} from '../models';
 
 export function GetConfigs():Promise<Array<main.TypeConfig>>;
 
+export function InitConfig():Promise<boolean>;
+
 export function Start(arg1:main.Config):Promise<boolean>;

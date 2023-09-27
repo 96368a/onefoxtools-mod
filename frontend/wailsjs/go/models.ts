@@ -1,6 +1,7 @@
 export namespace main {
 	
 	export class Config {
+	    index: number;
 	    name: string;
 	    command: string;
 	    env: string;
@@ -12,6 +13,7 @@ export namespace main {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.index = source["index"];
 	        this.name = source["name"];
 	        this.command = source["command"];
 	        this.env = source["env"];

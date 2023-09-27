@@ -6,6 +6,10 @@ export function GetConfigs() {
   return window['go']['main']['CONFIG']['GetConfigs']();
 }
 
+export function InitConfig() {
+  return window['go']['main']['CONFIG']['InitConfig']();
+}
+
 export function Start(arg1) {
   return window['go']['main']['CONFIG']['Start'](arg1);
 }

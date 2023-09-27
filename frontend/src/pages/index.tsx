@@ -1,9 +1,9 @@
 // import { Greet } from 'wailsjs/go/main/App'
 import type { main } from 'wailsjs/go/models'
 import PinyinMatch from 'pinyin-match'
-import { GetConfigs, Start } from '../../wailsjs/go/main/CONFIG'
+import { GetConfigs, InitConfig, Start } from '../../wailsjs/go/main/CONFIG'
 
-function Search({ configs, show, setShow }: { configs: { [key: string]: main.Config[] }; show: () => boolean; setShow: (b: boolean) => void }) {
+function Search({ configs, show, setShow }: { configs: main.TypeConfig[] ; show: () => boolean; setShow: (b: boolean) => void }) {
   const [searchString, setSearchString] = createSignal('')
   const [searchResults, setSearchResults] = createSignal<main.Config[]>([])
 
@@ -19,8 +19,8 @@ function Search({ configs, show, setShow }: { configs: { [key: string]: main.Con
     }
     else {
       const results = []
-      for (const type in configs) {
-        for (const c of configs[type]) {
+      for (const type of configs) {
+        for (const c of type.config) {
           if (PinyinMatch.match(c.name, searchString()))
             results.push(c)
         }
@@ -32,9 +32,9 @@ function Search({ configs, show, setShow }: { configs: { [key: string]: main.Con
   return (
     <div>
       <Show when={show()}>
-      <div class='w-screen fixed z-1000 pt-20' onclick={() => setShow(false)}>
+        <div class='w-screen fixed z-1000 pt-20' onclick={() => setShow(false)}>
           <input type="search" class="w-200 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent" placeholder="Search..."
-          value={searchString()} oninput={e => setSearchString(e.currentTarget.value) && rs()} onclick={e => e.stopPropagation()}/>
+            value={searchString()} oninput={e => setSearchString(e.currentTarget.value) && rs()} onclick={e => e.stopPropagation()} />
 
           <div py-4>
             <ul class='flex flex-col gap-2'>
@@ -51,8 +51,8 @@ function Search({ configs, show, setShow }: { configs: { [key: string]: main.Con
             </ul>
           </div>
         </div>
-      <div class="w-screen h-screen z-100 opacity-50 fixed bg-black" onclick={() => setShow(false)}>
-      </div>
+        <div class="w-screen h-screen z-100 opacity-50 fixed bg-black" onclick={() => setShow(false)}>
+        </div>
       </Show>
     </div>
   )
@@ -66,6 +66,7 @@ export default function Index() {
   })
   async function setData() {
     GetConfigs().then((result) => {
+      // 工具类别按照index进行排序
       result.sort((a, b) => {
         if (a.index === 0)
           a.index = 1e10
@@ -73,9 +74,24 @@ export default function Index() {
           b.index = 1e10
         return a.index - b.index
       })
+      // 类比里的工具按照index进行排序
+      result = result.map((c) => {
+        c.config.sort((a, b) => {
+          if (a.index === 0)
+            a.index = 1e10
+          if (b.index === 0)
+            b.index = 1e10
+          return a.index - b.index
+        })
+        return c
+      })
       setConfigs(result)
       console.log(result)
     })
+  }
+  async function refresh() {
+    await InitConfig()
+    await setData()
   }
   function start(c: main.Config) {
     Start(c)
@@ -89,11 +105,11 @@ export default function Index() {
 
   return (
     <div>
-      <Search configs={configs} show={showSearch} setShow={setShowSearch}/>
+      <Search configs={configs} show={showSearch} setShow={setShowSearch} />
       <div class="py-2">
-        <input type="search" onfocus={() => setShowSearch(true)} class='border rounded outline-none px-2 py-1'/>
+        <input type="search" onfocus={() => setShowSearch(true)} class='border rounded outline-none px-2 py-1' />
         <button class='bg-gray-400 mx-2 px-6 text-light py-1 rounded hover:bg-gray-5'>搜索</button>
-        <button class='bg-gray-400   px-6 text-light py-1 rounded hover:bg-gray-5' onclick={setData}>刷新</button>
+        <button class='bg-gray-400   px-6 text-light py-1 rounded hover:bg-gray-5' onclick={refresh}>刷新</button>
       </div>
       {/* <button class="btn" onclick={t}>233</button> */}
       <For each={configs}>{type => (

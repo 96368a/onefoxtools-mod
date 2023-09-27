@@ -17,6 +17,7 @@ type CONFIG struct {
 }
 
 type Config struct {
+	Index   int    `json:"index" yaml:"index"`
 	Name    string `json:"name" yaml:"name"`
 	Command string `json:"command" yaml:"command"`
 	Env     string `json:"env" yaml:"env,omitempty"`
@@ -42,7 +43,13 @@ func (c CONFIG) GetConfigs() []TypeConfig {
 	return Configs
 }
 
+func (c CONFIG) InitConfig() bool {
+	InitConfig()
+	return true
+}
+
 func InitConfig() {
+	Configs = make([]TypeConfig, 0)
 	//cmd := exec.Command("cmd", "/C", "cd")
 	//result, err := cmd.Output()
 	//if err != nil {
