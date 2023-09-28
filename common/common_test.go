@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"golang.org/x/exp/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -140,4 +141,16 @@ func TestPython(t *testing.T) {
 	if err != nil {
 		fmt.Printf("遍历目录出错：%s\n", err)
 	}
+}
+
+func TestLog(t *testing.T) {
+	logFile, err := os.OpenFile("info.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	if err != nil {
+		t.Fatal(err)
+	}
+	slog.SetDefault(slog.New(slog.NewJSONHandler(logFile, &slog.HandlerOptions{
+		AddSource: true,
+		Level:     slog.LevelDebug,
+	})))
+	slog.Info("hello", "count", 3)
 }

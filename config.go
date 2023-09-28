@@ -3,10 +3,9 @@ package main
 import (
 	"changeme/common"
 	"context"
-	"fmt"
 	"github.com/labstack/gommon/log"
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -74,19 +73,17 @@ func InitConfig() {
 		ext := strings.ToLower(filepath.Ext(path))
 		if ext == ".yml" || ext == ".yaml" {
 			var typeConfig TypeConfig
-			data, err := ioutil.ReadFile(path)
-			ioutil.WriteFile("res.txt", []byte(common.Paths.Dir), 0644)
+			data, err := os.ReadFile(path)
 			if err != nil {
-				ioutil.WriteFile("res.txt", []byte(err.Error()), 0644)
-				fmt.Println("读取文件出错:", err)
-				return nil
+				slog.Error("error:", err)
 			}
 			err = yaml.Unmarshal(data, &typeConfig)
 			if err != nil {
-				fmt.Println("error:", err)
+				slog.Error("error:", err)
 				return nil
 			}
 			Configs = append(Configs, typeConfig)
+			slog.Info("配置加载成功:", path)
 			//fmt.Println("init:", typeConfig)
 			//if _, ok := Configs[typeConfig.Type]; !ok {
 			//	Configs[typeConfig.Type] = make([]Config, 0)
@@ -113,4 +110,15 @@ func InitConfig() {
 	//}
 	//fmt.Println("init:", Paths)
 	os.Chdir(common.Paths.Dir)
+}
+
+func InitLog() {
+	//logFile, err := os.OpenFile("info.log", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+	//if err != nil {
+	//	slog.Error("error:", err)
+	//}
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+		AddSource: false,
+		Level:     slog.LevelDebug,
+	})))
 }
