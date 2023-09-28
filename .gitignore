@@ -22,6 +22,7 @@ go.work
 
 *.yml
 *.yaml
-frontend\*\*.js
-frontend\*\*.ts
-frontend\*\*.json
+frontend\wailsjs\*.ts
+frontend\wailsjs\*.js
+frontend\wailsjs\*\*.json
+*.log
