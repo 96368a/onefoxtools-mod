@@ -55,7 +55,7 @@ export default function Index() {
       <div class="card w-full bg-base-100 shadow-xl">
         <div class="card-body">
           <div class='justify-center card-title text-2xl py-2'>
-          <h1>ONE-FOX工具箱</h1>
+          <h1>末影工具箱</h1>
           </div>
           <div class="flex justify-center gap-2">
             <input type="search" id="search" class='input input-bordered w-full max-w-xs input-sm' onfocus={() => setShowSearch(true)} />
