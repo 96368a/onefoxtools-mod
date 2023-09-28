@@ -20,8 +20,10 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	// Perform your setup here
 	a.ctx = ctx
+	InitLog()
 	InitConfig()
 	common.InitEnv()
+
 }
 
 // domReady is called after front-end resources have been loaded

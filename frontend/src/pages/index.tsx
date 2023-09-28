@@ -32,6 +32,7 @@ export default function Index() {
         return c
       })
       setConfigs(result)
+      console.log(result)
     })
   }
   async function refresh() {
