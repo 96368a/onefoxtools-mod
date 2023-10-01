@@ -1,14 +1,28 @@
 // import { Greet } from 'wailsjs/go/main/App'
 import type { main } from 'wailsjs/go/models'
 
+import toast from 'solid-toast'
 import { GetConfigs, InitConfig, Start } from '../../wailsjs/go/main/CONFIG'
 import Search from '~/components/SearchUI'
 
 export default function Index() {
   const [configs, setConfigs] = createStore<main.TypeConfig[]>([])
   const [showSearch, setShowSearch] = createSignal(false)
+  const navigate = useNavigate()
   onMount(async () => {
-    await setData()
+    try {
+      await InitConfig()
+      await setData()
+      toast.success('加载完成')
+    }
+    catch (e) {
+      toast.error('加载出错')
+      navigate('/error', {
+        state: {
+          msg: e,
+        },
+      })
+    }
   })
   async function setData() {
     GetConfigs().then((result) => {
@@ -32,22 +46,26 @@ export default function Index() {
         return c
       })
       setConfigs(result)
-      console.log(result)
     })
   }
   async function refresh() {
-    await InitConfig()
-    await setData()
+    try {
+      await InitConfig()
+      await setData()
+      toast.success('加载完成')
+    }
+    catch (e) {
+      toast.error('加载出错')
+      navigate('/error', {
+        state: {
+          msg: e,
+        },
+      })
+    }
   }
   function start(c: main.Config) {
     Start(c)
   }
-  // function t() {
-  //   GetConfigs().then((result) => {
-  //     console.log(result)
-  //     setConfigs(result)
-  //   })
-  // }
 
   return (
     <div class=''>

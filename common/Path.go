@@ -1,10 +1,9 @@
 package common
 
 import (
-	"fmt"
-	"github.com/labstack/gommon/log"
+	"errors"
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"os"
 )
 
@@ -20,28 +19,28 @@ type YamlInfo struct {
 
 var Paths YamlInfo
 
-func InitEnv() {
-	data, err := ioutil.ReadFile("env.yml")
+func InitEnv() (bool, error) {
+	data, err := os.ReadFile("env.yml")
 	if err != nil {
-		return
+		slog.Error("error:", err)
+		return false, err
 	}
 	err = yaml.Unmarshal(data, &Paths)
 	if err != nil {
-		fmt.Println("error:", err)
-		return
+		slog.Error("error:", err)
+		return false, err
 	}
-	log.Info("init:", Paths)
+	slog.Info("环境配置加载成功~")
 	if Paths.Dir != "" {
 		stat, err := os.Stat(Paths.Dir)
 		if err != nil {
-			return
+			return false, errors.New("主目录不存在")
 		}
 		if stat.IsDir() {
 			os.Chdir(Paths.Dir)
 		} else {
-			log.Fatal("目录不存在", Paths.Dir)
+			return false, errors.New("主目录不是目录")
 		}
 	}
-	//os.Chdir(Paths.Dir)
-	//fmt.Println("init:", Paths)
+	return true, nil
 }

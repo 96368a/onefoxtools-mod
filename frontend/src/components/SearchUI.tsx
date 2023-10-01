@@ -8,8 +8,15 @@ export default function Search({ configs, show, setShow }: { configs: main.TypeC
 
   createEffect(() => {
     // 显示搜索ui时聚焦搜索框
-    if (show())
+    if (show()) {
+      (document.querySelector('#root') as HTMLDivElement).onwheel = (e) => {
+        // e.preventDefault()
+      }
       (document.querySelector('input[type=\'search\']') as HTMLInputElement).focus()
+    }
+    else {
+      (document.querySelector('#root') as HTMLDivElement).onwheel = null
+    }
   })
 
   function rs() {
@@ -47,7 +54,7 @@ export default function Search({ configs, show, setShow }: { configs: main.TypeC
                         Start(c)
                         e.stopPropagation()
                       }}>
-                        <button class="btn border">{c.name}</button>
+                        <button class="btn border btn-sm">{c.name}</button>
                         </li>
                     )
                   }

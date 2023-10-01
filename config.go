@@ -3,6 +3,7 @@ package main
 import (
 	"changeme/common"
 	"context"
+	"errors"
 	"github.com/labstack/gommon/log"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
@@ -29,7 +30,7 @@ type TypeConfig struct {
 	Config []Config `yaml:"config" json:"config"'`
 }
 
-var Configs = make([]TypeConfig, 0)
+var Configs []TypeConfig
 
 func (c CONFIG) Start(config Config) bool {
 	cmd := &common.Exec{}
@@ -38,32 +39,29 @@ func (c CONFIG) Start(config Config) bool {
 	return true
 }
 
-func (c CONFIG) GetConfigs() []TypeConfig {
-	return Configs
+func (c CONFIG) GetConfigs() ([]TypeConfig, error) {
+	return Configs, nil
 }
 
-func (c CONFIG) InitConfig() bool {
-	InitConfig()
+func (c CONFIG) InitConfig() (bool, error) {
+	_, err := InitConfig()
+	if err != nil {
+		return false, err
+	}
 	common.InitEnv()
-	return true
+	return true, nil
+
 }
 
-func InitConfig() {
+func InitConfig() (bool, error) {
+	// 获取可执行文件路径，读取目录下配置文件
 	executable, err := os.Executable()
 	if err != nil {
-		return
+		return false, err
 	}
 	dir := filepath.Dir(executable)
 	os.Chdir(dir)
 	Configs = make([]TypeConfig, 0)
-	//cmd := exec.Command("cmd", "/C", "cd")
-	//result, err := cmd.Output()
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return
-	//}
-	//// output res.txt
-	//ioutil.WriteFile("res.txt", result, 0644)
 	// 遍历config下的yaml文件
 	err = filepath.Walk("config", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -84,32 +82,17 @@ func InitConfig() {
 			}
 			Configs = append(Configs, typeConfig)
 			slog.Info("配置加载成功:", path)
-			//fmt.Println("init:", typeConfig)
-			//if _, ok := Configs[typeConfig.Type]; !ok {
-			//	Configs[typeConfig.Type] = make([]Config, 0)
-			//}
-			//Configs[typeConfig.Type] = append(Configs[typeConfig.Type], typeConfig.Config...)
-			//
-			//fmt.Println("init:", Configs)
 		}
 
 		return nil
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		slog.Error("error: 配置文件夹不存在")
+		return false, errors.New("配置文件夹不存在")
 	}
-	//data, err := ioutil.ReadFile("env.yml")
-	//if err != nil {
-	//	return
-	//}
-	//err = yaml.Unmarshal(data, &Paths)
-	//if err != nil {
-	//	fmt.Println("error:", err)
-	//	return
-	//}
-	//fmt.Println("init:", Paths)
 	os.Chdir(common.Paths.Dir)
+	return true, nil
 }
 
 func InitLog() {
