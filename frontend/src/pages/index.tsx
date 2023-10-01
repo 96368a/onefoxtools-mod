@@ -73,6 +73,11 @@ export default function Index() {
       <div class="px-2 pt-2">
       <div class="card w-full bg-base-100 shadow-xl">
         <div class="card-body">
+          <div class='flex gap-1 absolute right-2 top-2'>
+          <button class='btn-ghost rounded-full w-8 h-8'>
+            <div class='w-6 mx-auto i-carbon-settings'></div>
+          </button>
+          </div>
           <div class='justify-center card-title text-2xl py-2'>
           <h1>末影工具箱</h1>
           </div>
