@@ -1,9 +1,18 @@
+import { WindowSetDarkTheme, WindowSetLightTheme } from 'wailsjs/runtime/runtime'
+
 export default function Footer() {
   const [isDark, setIsDark] = createSignal(false)
   function toggle() {
     // toggleDark()
     setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
-    document.documentElement.setAttribute('data-theme', isDark() ? 'light' : 'dark')
+    if (isDark()) {
+      WindowSetLightTheme()
+      document.documentElement.setAttribute('data-theme', 'light')
+    }
+    else {
+      WindowSetDarkTheme()
+      document.documentElement.setAttribute('data-theme', 'dark')
+    }
   }
   return (
     <nav class="text-xl mt-6 inline-flex gap-2">

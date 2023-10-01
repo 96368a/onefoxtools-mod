@@ -19,6 +19,7 @@ var assets embed.FS
 var icon []byte
 
 func main() {
+	InitLog()
 	// Create an instance of the app structure
 	app := NewApp()
 
