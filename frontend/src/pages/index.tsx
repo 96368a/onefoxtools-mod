@@ -2,17 +2,17 @@
 import type { main } from 'wailsjs/go/models'
 
 import toast from 'solid-toast'
-import { GetConfigs, InitConfig, Start } from '../../wailsjs/go/main/CONFIG'
+import { Start } from '../../wailsjs/go/main/CONFIG'
 import Search from '~/components/SearchUI'
+import DataStore from '~/store/data'
 
 export default function Index() {
-  const [configs, setConfigs] = createStore<main.TypeConfig[]>([])
+  const { configs, refreshData } = DataStore
   const [showSearch, setShowSearch] = createSignal(false)
   const navigate = useNavigate()
   onMount(async () => {
     try {
-      await InitConfig()
-      await setData()
+      await refreshData()
       toast.success('加载完成')
     }
     catch (e) {
@@ -24,34 +24,10 @@ export default function Index() {
       })
     }
   })
-  async function setData() {
-    GetConfigs().then((result) => {
-      // 工具类别按照index进行排序
-      result.sort((a, b) => {
-        if (a.index === 0)
-          a.index = 1e10
-        if (b.index === 0)
-          b.index = 1e10
-        return a.index - b.index
-      })
-      // 类比里的工具按照index进行排序
-      result = result.map((c) => {
-        c.config.sort((a, b) => {
-          if (a.index === 0)
-            a.index = 1e10
-          if (b.index === 0)
-            b.index = 1e10
-          return a.index - b.index
-        })
-        return c
-      })
-      setConfigs(result)
-    })
-  }
+
   async function refresh() {
     try {
-      await InitConfig()
-      await setData()
+      await refreshData()
       toast.success('加载完成')
     }
     catch (e) {
@@ -63,6 +39,7 @@ export default function Index() {
       })
     }
   }
+
   function start(c: main.Config) {
     Start(c)
   }
@@ -71,21 +48,21 @@ export default function Index() {
     <div class=''>
       <Search configs={configs} show={showSearch} setShow={setShowSearch} />
       <div class="px-2 pt-2">
-      <div class="card w-full bg-base-100 shadow-xl">
+      <div class="w-full bg-base-100 shadow-xl card">
         <div class="card-body">
-          <div class='flex gap-1 absolute right-2 top-2'>
-          <button class='btn-ghost rounded-full w-8 h-8'>
-            <div class='w-6 mx-auto i-carbon-settings'></div>
+          <div class='absolute right-2 top-2 flex gap-1'>
+          <button class='h-8 w-8 rounded-full btn-ghost' onclick={() => navigate('/setting/env')}>
+            <div class='i-carbon-settings mx-auto w-6'></div>
           </button>
           </div>
-          <div class='justify-center card-title text-2xl py-2'>
+          <div class='justify-center py-2 text-2xl card-title'>
           <h1>末影工具箱</h1>
           </div>
           <div class="flex justify-center gap-2">
-            <input type="search" id="search" class='input input-bordered w-full max-w-xs input-sm' onfocus={() => setShowSearch(true)} />
+            <input type="search" id="search" class='max-w-xs w-full input input-bordered input-sm' onfocus={() => setShowSearch(true)} />
             <div class='flex gap-2'>
-              <button class='btn btn-sm btn-success px-10' onclick={() => setShowSearch(true)}>搜索</button>
-              <button class='btn btn-sm btn-warning px-10' onclick={refresh}>刷新</button>
+              <button class='px-10 btn btn-success btn-sm' onclick={() => setShowSearch(true)}>搜索</button>
+              <button class='px-10 btn btn-warning btn-sm' onclick={refresh}>刷新</button>
             </div>
           </div>
         </div>
@@ -95,14 +72,14 @@ export default function Index() {
       {/* <button class="btn" onclick={t}>233</button> */}
       <For each={configs}>{type => (
         <div class="px-3">
-        <div class="card w-full my-2 bg-base-100 shadow-xl">
-          <div class="card-body   items-center text-center">
+        <div class="my-2 w-full bg-base-100 shadow-xl card">
+          <div class="items-center text-center card-body">
             <h2 class="card-title">{type.type}</h2>
             <div class='w-full'>
               <div class="card-actions">
                 <For each={type.config}>{
                   c => (
-                    <button class="btn btn-sm btn-outline" onclick={() => start(c)}>{c.name}</button>
+                    <button class="btn btn-outline btn-sm" onclick={() => start(c)}>{c.name}</button>
                   )
                 }</For>
                 {/* <button class="btn btn-primary">Buy Now</button> */}

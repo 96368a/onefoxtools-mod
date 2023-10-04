@@ -12,7 +12,7 @@ export default function App() {
     themeChange()
   })
   return (
-    <main class="font-sans text-center text-gray-700 dark:text-gray-200 bg-base-200">
+    <main class="bg-base-200 text-center font-sans text-gray-700 dark:text-gray-200">
       <Toaster position='top-left'/>
       <Router>
         <Routes />
