@@ -15,7 +15,12 @@ export default function Footer() {
     }
   }
   return (
-    <nav class="text-xl mt-6 inline-flex gap-2">
+    <nav class="mt-6 inline-flex gap-2 text-xl">
+      <button
+        class="icon-btn i-carbon-home"
+        title="主页"
+        onclick={() => location.href = '/'}
+      ></button>
       <button class="icon-btn !outline-none" onClick={toggle}>
         {isDark() ? <div class="i-carbon-moon" /> : <div class="i-carbon-sun" />}
       </button>
@@ -26,6 +31,7 @@ export default function Footer() {
         target="_blank"
         title="GitHub"
       />
+
     </nav>
 
   )

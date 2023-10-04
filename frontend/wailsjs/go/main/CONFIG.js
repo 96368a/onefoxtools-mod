@@ -6,6 +6,10 @@ export function GetConfigs() {
   return window['go']['main']['CONFIG']['GetConfigs']();
 }
 
+export function GetENVConfigs() {
+  return window['go']['main']['CONFIG']['GetENVConfigs']();
+}
+
 export function InitConfig() {
   return window['go']['main']['CONFIG']['InitConfig']();
 }

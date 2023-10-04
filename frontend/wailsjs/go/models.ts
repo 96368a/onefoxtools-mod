@@ -1,3 +1,22 @@
+export namespace common {
+	
+	export class YamlInfo {
+	    dir: string;
+	    env: {[key: string]: string};
+	
+	    static createFrom(source: any = {}) {
+	        return new YamlInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.dir = source["dir"];
+	        this.env = source["env"];
+	    }
+	}
+
+}
+
 export namespace main {
 	
 	export class Config {

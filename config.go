@@ -43,6 +43,10 @@ func (c CONFIG) GetConfigs() ([]TypeConfig, error) {
 	return Configs, nil
 }
 
+func (c CONFIG) GetENVConfigs() (common.YamlInfo, error) {
+	return common.Paths, nil
+}
+
 func (c CONFIG) InitConfig() (bool, error) {
 	_, err := InitConfig()
 	if err != nil {
@@ -50,7 +54,6 @@ func (c CONFIG) InitConfig() (bool, error) {
 	}
 	common.InitEnv()
 	return true, nil
-
 }
 
 func InitConfig() (bool, error) {
