@@ -10,6 +10,10 @@ export function GetENVConfigs() {
   return window['go']['main']['CONFIG']['GetENVConfigs']();
 }
 
+export function GetStartTime() {
+  return window['go']['main']['CONFIG']['GetStartTime']();
+}
+
 export function InitConfig() {
   return window['go']['main']['CONFIG']['InitConfig']();
 }
