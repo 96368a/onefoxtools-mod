@@ -2,7 +2,7 @@
 import type { main } from 'wailsjs/go/models'
 
 import toast from 'solid-toast'
-import { Start } from '../../wailsjs/go/main/CONFIG'
+import { GetStartTime, Start } from '../../wailsjs/go/main/CONFIG'
 import Search from '~/components/SearchUI'
 import DataStore from '~/store/data'
 
@@ -13,7 +13,12 @@ export default function Index() {
   onMount(async () => {
     try {
       await refreshData()
-      toast.success('加载完成')
+      // toast.success('加载完成')
+      GetStartTime().then((t) => {
+        const startTime = new Date(t).getTime()
+        const endTime = new Date().getTime()
+        toast.success(`加载完成，耗时${(endTime - startTime) / 1000}秒`)
+      })
     }
     catch (e) {
       toast.error('加载出错')

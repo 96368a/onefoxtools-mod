@@ -18,7 +18,7 @@ var assets embed.FS
 
 //go:embed build/appicon.png
 var icon []byte
-var start time.Time
+var start = time.Now()
 
 func main() {
 	start = time.Now()

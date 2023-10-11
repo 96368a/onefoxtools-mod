@@ -10,6 +10,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 type CONFIG struct {
@@ -45,6 +46,10 @@ func (c CONFIG) GetConfigs() ([]TypeConfig, error) {
 
 func (c CONFIG) GetENVConfigs() (common.YamlInfo, error) {
 	return common.Paths, nil
+}
+
+func (c CONFIG) GetStartTime() time.Time {
+	return start
 }
 
 func (c CONFIG) InitConfig() (bool, error) {
