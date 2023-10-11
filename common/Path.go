@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 )
 
 type PathInfo struct {
@@ -65,6 +66,9 @@ func LoadPython(root string) {
 			if strings.EqualFold(info.Name(), exe) {
 				// 找到了 Python 可执行文件，执行命令获取版本信息
 				cmd := exec.Command(path, "--version")
+				cmd.SysProcAttr = &syscall.SysProcAttr{
+					HideWindow: true,
+				}
 				output, err := cmd.CombinedOutput()
 				if err != nil {
 					//slog.Error("执行命令出错：%s\n", err)
@@ -119,6 +123,9 @@ func LoadJava(root string) {
 		if strings.EqualFold(info.Name(), javaExe) {
 			// 找到了 java.exe，执行命令获取版本信息
 			cmd := exec.Command(path, "-version")
+			cmd.SysProcAttr = &syscall.SysProcAttr{
+				HideWindow: true,
+			}
 			output, err := cmd.CombinedOutput()
 			if err != nil {
 				//fmt.Printf("执行命令出错：%s\n", err)

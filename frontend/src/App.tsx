@@ -16,8 +16,8 @@ export default function App() {
       <Toaster position='top-left'/>
       <Router>
         <Routes />
+        <Footer />
       </Router>
-      <Footer />
     </main>
   )
 }
