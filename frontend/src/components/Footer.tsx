@@ -2,6 +2,7 @@ import { WindowSetDarkTheme, WindowSetLightTheme } from 'wailsjs/runtime/runtime
 
 export default function Footer() {
   const [isDark, setIsDark] = createSignal(false)
+  const navigate = useNavigate()
   function toggle() {
     // toggleDark()
     setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
@@ -19,7 +20,7 @@ export default function Footer() {
       <button
         class="icon-btn i-carbon-home"
         title="主页"
-        onclick={() => location.href = '/'}
+        onclick={() => navigate('/')}
       ></button>
       <button class="icon-btn !outline-none" onClick={toggle}>
         {isDark() ? <div class="i-carbon-moon" /> : <div class="i-carbon-sun" />}
