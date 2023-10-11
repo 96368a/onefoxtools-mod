@@ -2,7 +2,6 @@ package common
 
 import (
 	"errors"
-	"fmt"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -68,7 +67,7 @@ func LoadPython(root string) {
 				cmd := exec.Command(path, "--version")
 				output, err := cmd.CombinedOutput()
 				if err != nil {
-					slog.Error("执行命令出错：%s\n", err)
+					//slog.Error("执行命令出错：%s\n", err)
 					return nil
 				}
 
@@ -86,7 +85,6 @@ func LoadPython(root string) {
 					version = "未知版本"
 				}
 				pythons = append(pythons, []string{version, path})
-				fmt.Printf("找到了 %s，版本为：%s : %s\n", exe, version, path)
 			}
 		}
 
@@ -123,7 +121,7 @@ func LoadJava(root string) {
 			cmd := exec.Command(path, "-version")
 			output, err := cmd.CombinedOutput()
 			if err != nil {
-				fmt.Printf("执行命令出错：%s\n", err)
+				//fmt.Printf("执行命令出错：%s\n", err)
 				return nil
 			}
 			version := ""
@@ -150,9 +148,23 @@ func LoadJava(root string) {
 		return
 	}
 	for _, j := range javas {
-		if strings.HasPrefix(j[0], "1.8") {
-			Paths.Env["java"] = j[1]
-			break
+		//if strings.HasPrefix(j[0], "1.8") {
+		//	Paths.Env["java"] = j[1]
+		//	continue
+		//}
+		//处理java8及以下的版本
+		r, _ := regexp.Compile("^1\\.(\\d)\\.\\d+")
+		ver := r.FindStringSubmatch(j[0])
+		if len(ver) == 2 {
+			Paths.Env["java"+ver[1]] = j[1]
+			continue
 		}
+		//java8以上自适应
+		r, _ = regexp.Compile("(\\d+)\\.\\d+\\.\\d+")
+		ver = r.FindStringSubmatch(j[0])
+		if len(ver) == 2 {
+			Paths.Env["java"+ver[1]] = j[1]
+		}
+
 	}
 }
