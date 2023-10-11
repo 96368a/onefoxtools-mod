@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"log"
+	"time"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/logger"
@@ -17,8 +18,10 @@ var assets embed.FS
 
 //go:embed build/appicon.png
 var icon []byte
+var start time.Time
 
 func main() {
+	start = time.Now()
 	InitLog()
 	// Create an instance of the app structure
 	app := NewApp()
