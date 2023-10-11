@@ -66,7 +66,7 @@ func InitConfig() (bool, error) {
 	os.Chdir(dir)
 	Configs = make([]TypeConfig, 0)
 	// 遍历config下的yaml文件
-	err = filepath.Walk("config", func(path string, info os.FileInfo, err error) error {
+	err = filepath.WalkDir("config", func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}

@@ -3,6 +3,7 @@ package common
 import (
 	"fmt"
 	"golang.org/x/exp/slog"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -153,4 +154,15 @@ func TestLog(t *testing.T) {
 		Level:     slog.LevelDebug,
 	})))
 	slog.Info("hello", "count", 3)
+}
+
+func TestWalk(t *testing.T) {
+	files, err := os.ReadDir("../")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		fmt.Println(file.IsDir())
+	}
 }
