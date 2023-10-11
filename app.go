@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"golang.org/x/exp/slog"
+	"time"
 )
 
 // App struct
@@ -24,6 +26,8 @@ func (a *App) startup(ctx context.Context) {
 // domReady is called after front-end resources have been loaded
 func (a App) domReady(ctx context.Context) {
 	// Add your action here
+	cost := time.Since(start)
+	slog.Info("启动耗时:", cost.Seconds())
 }
 
 // beforeClose is called when the application is about to quit,
