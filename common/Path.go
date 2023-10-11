@@ -54,7 +54,7 @@ func InitEnv() (bool, error) {
 func LoadPython(root string) {
 	pythons := make([][]string, 0)
 	pythonExes := []string{"python.exe", "python3.exe"}
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(root, func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -107,7 +107,7 @@ func LoadPython(root string) {
 func LoadJava(root string) {
 	javas := make([][]string, 0)
 	javaExe := "java.exe"
-	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
+	err := filepath.WalkDir(root, func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
