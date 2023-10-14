@@ -2,6 +2,7 @@ package common
 
 import (
 	"errors"
+	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 	"os"
@@ -47,8 +48,12 @@ func InitEnv() (bool, error) {
 			return false, errors.New("主目录不是目录")
 		}
 	}
+	envs := maps.Clone(Paths.Env)
 	LoadJava(Paths.Dir)
 	LoadPython(Paths.Dir)
+	for k, v := range envs {
+		Paths.Env[k] = v
+	}
 	return true, nil
 }
 
