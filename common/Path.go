@@ -26,7 +26,7 @@ type YamlInfo struct {
 var Paths YamlInfo
 
 func InitEnv() (bool, error) {
-	data, err := os.ReadFile("env.yml")
+	data, err := os.ReadFile("config/base.yml")
 	if err != nil {
 		slog.Error("error:", err)
 		return false, err
