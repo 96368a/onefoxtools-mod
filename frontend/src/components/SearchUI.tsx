@@ -32,7 +32,6 @@ export default function Search({ configs, show, setShow }: { configs: main.TypeC
         }
       }
       setSearchResults(results)
-      console.log(results)
     }
   }
 

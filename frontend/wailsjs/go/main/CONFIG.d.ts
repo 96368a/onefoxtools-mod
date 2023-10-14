@@ -8,6 +8,8 @@ export function GetConfigs():Promise<Array<main.TypeConfig>>;
 
 export function GetENVConfigs():Promise<common.YamlInfo>;
 
+export function GetRefreshTime():Promise<time.Time>;
+
 export function GetStartTime():Promise<time.Time>;
 
 export function InitConfig():Promise<boolean>;

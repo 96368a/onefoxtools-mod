@@ -19,7 +19,7 @@ function createDataStore() {
           b.index = 1e10
         return a.index - b.index
       })
-      // 类比里的工具按照index进行排序
+      // 类别里的工具按照index进行排序
       result = result.map((c) => {
         c.config.sort((a, b) => {
           if (a.index === 0)

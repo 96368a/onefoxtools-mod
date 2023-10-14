@@ -30,6 +30,12 @@ export default function () {
                             <span>工具设置</span>
                         </a>
                     </li>
+                    <li onclick={() => navigate('/')}>
+                        <a class="flex justify-start">
+                            <div class='i-carbon-arrow-left h-5 w-5'></div>
+                            <span>返回主页</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             <Outlet />

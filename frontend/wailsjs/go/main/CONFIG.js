@@ -10,6 +10,10 @@ export function GetENVConfigs() {
   return window['go']['main']['CONFIG']['GetENVConfigs']();
 }
 
+export function GetRefreshTime() {
+  return window['go']['main']['CONFIG']['GetRefreshTime']();
+}
+
 export function GetStartTime() {
   return window['go']['main']['CONFIG']['GetStartTime']();
 }

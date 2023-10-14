@@ -18,10 +18,11 @@ var assets embed.FS
 
 //go:embed build/appicon.png
 var icon []byte
-var start = time.Now()
+var startTime = time.Now()
+var refreshTime = time.Now()
 
 func main() {
-	start = time.Now()
+	startTime = time.Now()
 	InitLog()
 	// Create an instance of the app structure
 	app := NewApp()
