@@ -66,6 +66,26 @@ func (c CONFIG) InitConfig() (bool, error) {
 	return true, nil
 }
 
+func checkConfig() bool {
+	stat, err := os.Stat("config/tools")
+	if err != nil {
+		os.MkdirAll("config/tools", os.ModePerm)
+	} else if !stat.IsDir() {
+		log.Fatal("配置文件夹不是目录")
+		return false
+	}
+
+	stat, err = os.Stat("config/base.yml")
+	if err != nil {
+		envs, _ := yaml.Marshal(common.Paths)
+		os.WriteFile("config/base.yml", envs, os.ModePerm)
+	} else if stat.IsDir() {
+		log.Fatalf("基础配置文件是目录")
+		return false
+	}
+	return true
+}
+
 func InitConfig() (bool, error) {
 	// 获取可执行文件路径，读取目录下配置文件
 	executable, err := os.Executable()
@@ -74,9 +94,15 @@ func InitConfig() (bool, error) {
 	}
 	dir := filepath.Dir(executable)
 	os.Chdir(dir)
+
+	// 检查config文件夹
+	isOk := checkConfig()
+	if !isOk {
+		return false, nil
+	}
 	Configs = make([]TypeConfig, 0)
 	// 遍历config下的yaml文件
-	err = filepath.WalkDir("config", func(path string, info os.DirEntry, err error) error {
+	err = filepath.WalkDir("config/tools", func(path string, info os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
