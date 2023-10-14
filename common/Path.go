@@ -36,6 +36,13 @@ func InitEnv() (bool, error) {
 		slog.Error("error:", err)
 		return false, err
 	}
+	if !filepath.IsAbs(Paths.Dir) {
+		Paths.Dir, err = filepath.Abs(Paths.Dir)
+		if err != nil {
+			slog.Error("error:", err)
+			return false, err
+		}
+	}
 	slog.Info("环境配置加载成功~")
 	if Paths.Dir != "" {
 		stat, err := os.Stat(Paths.Dir)
