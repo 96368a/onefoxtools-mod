@@ -88,7 +88,7 @@ func LoadPython(root string) {
 				} else {
 					version = "未知版本"
 				}
-				pythons = append(pythons, []string{version, path})
+				pythons = append(pythons, []string{version, filepath.Dir(path)})
 			}
 		}
 
@@ -144,7 +144,7 @@ func LoadJava(root string) {
 			} else {
 				version = "未知版本"
 			}
-			javas = append(javas, []string{version, path})
+			javas = append(javas, []string{version, filepath.Dir(path)})
 		}
 
 		return nil
