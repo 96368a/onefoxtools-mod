@@ -49,10 +49,15 @@ func (c CONFIG) GetENVConfigs() (common.YamlInfo, error) {
 }
 
 func (c CONFIG) GetStartTime() time.Time {
-	return start
+	return startTime
+}
+
+func (c CONFIG) GetRefreshTime() time.Time {
+	return refreshTime
 }
 
 func (c CONFIG) InitConfig() (bool, error) {
+	refreshTime = time.Now()
 	_, err := InitConfig()
 	if err != nil {
 		return false, err
