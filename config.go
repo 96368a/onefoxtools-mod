@@ -28,7 +28,7 @@ type Config struct {
 type TypeConfig struct {
 	Index  int      `yaml:"index,omitempty" json:"index"`
 	Type   string   `yaml:"type" json:"type"`
-	Config []Config `yaml:"config" json:"config"'`
+	Config []Config `yaml:"config" json:"config"`
 }
 
 var Configs []TypeConfig
@@ -58,11 +58,11 @@ func (c CONFIG) GetRefreshTime() time.Time {
 
 func (c CONFIG) InitConfig() (bool, error) {
 	refreshTime = time.Now()
+	common.InitEnv()
 	_, err := InitConfig()
 	if err != nil {
 		return false, err
 	}
-	common.InitEnv()
 	return true, nil
 }
 
