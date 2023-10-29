@@ -8,7 +8,7 @@ import DataStore from '~/store/data'
 
 export default function () {
   return (
-      <Index></Index>
+    <Index></Index>
   )
 }
 
@@ -17,10 +17,10 @@ function Index() {
   const [showSearch, setShowSearch] = createSignal(false)
   const navigate = useNavigate()
 
+  const [time, setTime] = createSignal(-1)
   // 刷新数据
   async function refresh() {
     // 记录开始时间
-    const [time, setTime] = createSignal(-1)
     toast.promise(
       (async function () {
         const startTime = new Date().getTime()
@@ -37,7 +37,19 @@ function Index() {
   }
 
   function start(c: main.Config) {
-    Start(c)
+    toast.promise(
+      (async function () {
+        const startTime = new Date().getTime()
+        await Start(c)
+        const endTime = new Date().getTime()
+        setTime((endTime - startTime) / 1000)
+      }()),
+      {
+        loading: `启动 ${c.name} 中...`,
+        success: () => <span> {c.name} 启动成功</span>,
+        error: `${c.name} 执行出错`,
+      },
+    )
   }
 
   return (

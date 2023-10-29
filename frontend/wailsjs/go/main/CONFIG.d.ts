@@ -14,4 +14,4 @@ export function GetStartTime():Promise<time.Time>;
 
 export function InitConfig():Promise<boolean>;
 
-export function Start(arg1:main.Config):Promise<boolean>;
+export function Start(arg1:main.Config):Promise<void>;
