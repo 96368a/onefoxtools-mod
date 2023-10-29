@@ -33,11 +33,14 @@ type TypeConfig struct {
 
 var Configs []TypeConfig
 
-func (c CONFIG) Start(config Config) bool {
+func (c CONFIG) Start(config Config) error {
 	cmd := &common.Exec{}
 	log.Info("执行命令:", config)
-	cmd.CmdExec(config.Env, config.Command, config.Dir)
-	return true
+	err := cmd.CmdExec(config.Env, config.Command, config.Dir)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c CONFIG) GetConfigs() ([]TypeConfig, error) {

@@ -3,12 +3,14 @@ package common
 import (
 	"context"
 	"fmt"
+	"golang.org/x/exp/slog"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
 	"syscall"
+	"time"
 )
 
 type Exec struct {
@@ -43,10 +45,14 @@ func (e *Exec) PowerShellExec(command string) error {
 	return nil
 }
 
-func (e *Exec) CmdExec(env string, command string, workDir string) string {
+func (e *Exec) CmdExec(env string, command string, workDir string) error {
 	// 改变当前工作目录
 	_ = os.Chdir(workDir)
+
 	// 开启一个cmd
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Second) // 设置超时时间
+	defer cancel()
 
 	cmd := exec.Command("cmd", "/c", command)
 	cmd.SysProcAttr = &syscall.SysProcAttr{
@@ -54,33 +60,32 @@ func (e *Exec) CmdExec(env string, command string, workDir string) string {
 		NoInheritHandles: true,
 		CreationFlags:    0x10,
 	}
+	// 设置环境变量
 	if env != "" {
 		if _, ok := Paths.Env[env]; ok {
 			cmd.Env = append(os.Environ(), "PATH="+Paths.Env[env])
 		}
 	}
-	//for p := range Paths {
-	//	if Paths[p].Name == env {
-	//		cmd.Env = append(os.Environ(), "PATH="+Paths[p].Path)
-	//	}
-	//}
 	err := cmd.Start()
 	if err != nil {
-		fmt.Println("命令启动失败:", err)
-		return ""
+		slog.Error("命令启动失败:", err)
+		return err
 	}
-	//cmd.Stdin = strings.NewReader(utf16Command)
-	//output, _ := cmd.CombinedOutput()
-	//if err != nil {
-	//	fmt.Println("执行命令出错:", err)
-	//	return err.Error()
-	//}
-	//results := string(output)
-	//fmt.Println("命令输出结果:", results)
-	//return results
-	//err = cmd.Wait() // 等待命令执行完成
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	return ""
+	done := make(chan error)
+	go func() {
+		done <- cmd.Wait()
+	}()
+
+	select {
+	case <-ctx.Done():
+		// 超时后直接返回
+		return nil
+	case err := <-done:
+		if err != nil {
+			slog.Error("进程执行出错：", err)
+			return err
+		} else {
+			return nil
+		}
+	}
 }
