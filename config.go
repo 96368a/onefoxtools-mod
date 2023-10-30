@@ -51,6 +51,18 @@ func (c CONFIG) GetENVConfigs() (common.YamlInfo, error) {
 	return common.Paths, nil
 }
 
+func (c CONFIG) SaveENVConfigs(env common.YamlInfo) error {
+	envs, err := yaml.Marshal(env)
+	if err != nil {
+		return err
+	}
+	//改变目录
+	common.CdExePath()
+	//保存配置文件
+	os.WriteFile("config/base.yml", envs, os.ModePerm)
+	return nil
+}
+
 func (c CONFIG) GetStartTime() time.Time {
 	return startTime
 }
@@ -59,6 +71,13 @@ func (c CONFIG) GetRefreshTime() time.Time {
 	return refreshTime
 }
 
+func (c CONFIG) InitEnv() (bool, error) {
+	_, err := common.InitEnv()
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
 func (c CONFIG) InitConfig() (bool, error) {
 	refreshTime = time.Now()
 	common.InitEnv()

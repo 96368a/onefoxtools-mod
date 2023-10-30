@@ -209,3 +209,14 @@ func getDepth(root string, path string) int {
 	}
 	return depth
 }
+
+func CdExePath() error {
+	// 获取可执行文件路径，读取目录下配置文件
+	executable, err := os.Executable()
+	if err != nil {
+		return err
+	}
+	dir := filepath.Dir(executable)
+	os.Chdir(dir)
+	return nil
+}
