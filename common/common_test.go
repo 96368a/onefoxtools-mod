@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestCmd(t *testing.T) {
@@ -164,5 +165,33 @@ func TestWalk(t *testing.T) {
 
 	for _, file := range files {
 		fmt.Println(file.IsDir())
+	}
+}
+
+func TestProcess(t *testing.T) {
+	cmd := exec.Command("cmd", "/c", "cd \\AntSword-Loader-v4.0.3-win32-x64 && AntSword.exe")
+	err := cmd.Start()
+	if err != nil {
+		fmt.Println("启动出错:", err)
+	}
+	done := make(chan error, 1)
+	go func() {
+		done <- cmd.Wait()
+	}()
+
+	select {
+	case <-time.After(3 * time.Second): // 等待一段时间
+		err := cmd.Process.Kill()
+		if err != nil {
+			fmt.Println("强制终止进程失败:", err)
+		}
+		<-done // 等待 cmd.Wait() 完成
+		fmt.Println("进程已终止")
+	case err := <-done:
+		if err != nil {
+			fmt.Println("等待进程退出失败:", err)
+		} else {
+			fmt.Println("进程已退出")
+		}
 	}
 }

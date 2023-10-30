@@ -43,6 +43,16 @@ func (c CONFIG) Start(config Config) error {
 	return nil
 }
 
+func (c CONFIG) TestCmdExec(config Config) error {
+	cmd := &common.Exec{}
+	log.Info("测试命令:", config.Command)
+	err := cmd.TestCmdExec(config.Env, config.Command, config.Dir)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c CONFIG) GetConfigs() ([]TypeConfig, error) {
 	return Configs, nil
 }
