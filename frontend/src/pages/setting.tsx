@@ -18,7 +18,7 @@ export default function () {
                             <span>基础设置</span>
                         </a>
                     </li>
-                    <li onclick={() => navigate('/setting/env')}>
+                    <li onclick={() => navigate('/setting/env')} ondblclick={() => navigate('/setting/debug_exe')}>
                         <a class="flex justify-start">
                             <div class='i-carbon-settings h-5 w-5'></div>
                             <div>环境变量配置</div>

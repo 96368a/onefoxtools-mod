@@ -33,3 +33,7 @@ export function SaveENVConfigs(arg1) {
 export function Start(arg1) {
   return window['go']['main']['CONFIG']['Start'](arg1);
 }
+
+export function TestCmdExec(arg1) {
+  return window['go']['main']['CONFIG']['TestCmdExec'](arg1);
+}
