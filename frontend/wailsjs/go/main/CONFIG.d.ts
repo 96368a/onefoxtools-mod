@@ -14,4 +14,8 @@ export function GetStartTime():Promise<time.Time>;
 
 export function InitConfig():Promise<boolean>;
 
+export function InitEnv():Promise<boolean>;
+
+export function SaveENVConfigs(arg1:common.YamlInfo):Promise<void>;
+
 export function Start(arg1:main.Config):Promise<void>;

@@ -21,7 +21,7 @@ func TestCmd(t *testing.T) {
 	results := exec.CmdExec("java", "echo %PATH%", "")
 	//results := exec.CmdExec("java", "java -jar D:\\BlueTeamTools.jar", "")
 	fmt.Println(Paths)
-	if results == "" {
+	if results == nil {
 		t.Error("测试失败")
 	}
 	t.Log("测试结束")

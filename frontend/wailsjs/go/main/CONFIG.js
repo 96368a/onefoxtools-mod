@@ -22,6 +22,14 @@ export function InitConfig() {
   return window['go']['main']['CONFIG']['InitConfig']();
 }
 
+export function InitEnv() {
+  return window['go']['main']['CONFIG']['InitEnv']();
+}
+
+export function SaveENVConfigs(arg1) {
+  return window['go']['main']['CONFIG']['SaveENVConfigs'](arg1);
+}
+
 export function Start(arg1) {
   return window['go']['main']['CONFIG']['Start'](arg1);
 }

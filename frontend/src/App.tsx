@@ -10,10 +10,11 @@ import DataStore from '~/store/data'
 
 export default function App() {
   const Routes = useRoutes(routes)
-  const { refreshData } = DataStore
+  const { refresConfig, refreshEnv } = DataStore
   onMount(async () => {
     themeChange()
-    refreshData().then(() => {
+    await refreshEnv()
+    refresConfig().then(() => {
       GetStartTime().then((t) => {
         const startTime = new Date(t).getTime()
         const endTime = new Date().getTime()

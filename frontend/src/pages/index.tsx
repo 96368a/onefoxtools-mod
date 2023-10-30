@@ -13,7 +13,7 @@ export default function () {
 }
 
 function Index() {
-  const { configs, refreshData } = DataStore
+  const { configs, refresConfig } = DataStore
   const [showSearch, setShowSearch] = createSignal(false)
   const navigate = useNavigate()
 
@@ -24,7 +24,7 @@ function Index() {
     toast.promise(
       (async function () {
         const startTime = new Date().getTime()
-        await refreshData()
+        await refresConfig()
         const endTime = new Date().getTime()
         setTime((endTime - startTime) / 1000)
       }()),

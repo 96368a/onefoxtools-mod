@@ -1,12 +1,28 @@
-import { GetConfigs, GetENVConfigs, InitConfig } from 'wailsjs/go/main/CONFIG'
+import { GetConfigs, GetENVConfigs, InitConfig, InitEnv, SaveENVConfigs } from 'wailsjs/go/main/CONFIG'
 import type { common, main } from 'wailsjs/go/models'
 
 function createDataStore() {
-  const [envConfig, setEnvConfig] = createSignal<common.YamlInfo>()
+  const [envConfig, setEnvConfig] = createStore<common.YamlInfo>({} as common.YamlInfo)
   const [configs, setConfigs] = createStore<main.TypeConfig[]>([])
   async function getEnv() {
     GetENVConfigs().then((res) => {
       setEnvConfig(res)
+    })
+  }
+  async function saveEnv() {
+    if (!envConfig)
+      return
+    SaveENVConfigs(envConfig!)
+  }
+  async function updateEnv(key: string, path: string) {
+    if (!envConfig)
+      return
+    setEnvConfig({
+      ...envConfig,
+      env: {
+        ...envConfig.env,
+        [key]: path,
+      },
     })
   }
   async function getData() {
@@ -33,22 +49,17 @@ function createDataStore() {
       setConfigs(result)
     })
   }
-  async function refreshData() {
-    try {
-      await InitConfig()
-      await getData()
-      // toast.success('加载完成')
-    }
-    catch (e) {
-      // toast.error('加载出错')
-      // navigate('/error', {
-      //   state: {
-      //     msg: e,
-      //   },
-      // })
-    }
+  async function refresConfig() {
+    await InitConfig()
+    await getData()
   }
-  return { configs, getData, refreshData, getEnv, envConfig }
+  async function refreshEnv() {
+    await InitEnv()
+    GetENVConfigs().then((res) => {
+      setEnvConfig(res)
+    })
+  }
+  return { configs, getData, refresConfig, refreshEnv, getEnv, envConfig, saveEnv, updateEnv }
 }
 
 export default createRoot(createDataStore)
