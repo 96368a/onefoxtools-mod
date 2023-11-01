@@ -2,6 +2,7 @@ package common
 
 import (
 	"fmt"
+	"github.com/mitchellh/go-ps"
 	"golang.org/x/exp/slog"
 	"log"
 	"os"
@@ -9,8 +10,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"syscall"
 	"testing"
 	"time"
+	"unsafe"
 )
 
 func TestCmd(t *testing.T) {
@@ -168,8 +171,36 @@ func TestWalk(t *testing.T) {
 	}
 }
 
+var (
+	psapidll                = syscall.NewLazyDLL("psapi.dll")
+	procGetModuleFileNameEx = psapidll.NewProc("GetModuleFileNameExW")
+)
+
+func getProcessPath(pid uint32) string {
+	handle, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, false, pid)
+	if err != nil {
+		fmt.Printf("Failed to open process: %s\n", err)
+		return ""
+	}
+	defer syscall.CloseHandle(handle)
+
+	var path [syscall.MAX_PATH]uint16
+	ret, _, err := procGetModuleFileNameEx.Call(uintptr(handle), 0, uintptr(unsafe.Pointer(&path[0])), syscall.MAX_PATH)
+	if ret == 0 {
+		fmt.Println("Failed to get module file name:", err)
+		return ""
+	}
+
+	absolutePath := syscall.UTF16ToString(path[:])
+	fmt.Printf("Process path: %s\n", absolutePath)
+	return absolutePath
+}
+
 func TestProcess(t *testing.T) {
-	cmd := exec.Command("cmd", "/c", "cd \\AntSword-Loader-v4.0.3-win32-x64 && AntSword.exe")
+	cmd := exec.Command("cmd", "/c", "cd D:\\hacker\\tools\\AntSword-Loader-v4.0.3-win32-x64 && AntSword.exe")
+	cmd.SysProcAttr = &syscall.SysProcAttr{
+		NoInheritHandles: false,
+	}
 	err := cmd.Start()
 	if err != nil {
 		fmt.Println("启动出错:", err)
@@ -181,7 +212,31 @@ func TestProcess(t *testing.T) {
 
 	select {
 	case <-time.After(3 * time.Second): // 等待一段时间
-		err := cmd.Process.Kill()
+		// 获取当前系统中所有的进程
+		processList, err := ps.Processes()
+		if err != nil {
+			fmt.Println("获取进程列表失败:", err)
+			os.Exit(1)
+		}
+
+		// 遍历进程列表，模糊匹配进程名并终止匹配到的进程
+		for _, p := range processList {
+			if strings.Contains(p.Executable(), "AntSword.exe") {
+				absolutePath := getProcessPath(uint32(p.Pid()))
+				if strings.HasPrefix(absolutePath, "D:\\hacker\\tools") {
+					process, err := os.FindProcess(p.Pid())
+					if err != nil {
+						return
+					}
+					err = process.Kill()
+					if err != nil {
+						fmt.Printf("Failed to terminate process: %s\n", err)
+						return
+					}
+				}
+			}
+		}
+		err = cmd.Process.Kill()
 		if err != nil {
 			fmt.Println("强制终止进程失败:", err)
 		}
