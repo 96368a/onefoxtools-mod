@@ -3,14 +3,17 @@ package common
 import (
 	"context"
 	"fmt"
+	"github.com/mitchellh/go-ps"
 	"golang.org/x/exp/slog"
 	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"syscall"
 	"time"
+	"unsafe"
 )
 
 type Exec struct {
@@ -90,6 +93,63 @@ func (e *Exec) CmdExec(env string, command string, workDir string) error {
 	}
 }
 
+var (
+	psapidll                = syscall.NewLazyDLL("psapi.dll")
+	procGetModuleFileNameEx = psapidll.NewProc("GetModuleFileNameExW")
+)
+
+func getProcessPath(pid uint32) string {
+	handle, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, false, pid)
+	if err != nil {
+		return ""
+	}
+	defer syscall.CloseHandle(handle)
+
+	var path [syscall.MAX_PATH]uint16
+	ret, _, err := procGetModuleFileNameEx.Call(uintptr(handle), 0, uintptr(unsafe.Pointer(&path[0])), syscall.MAX_PATH)
+	if ret == 0 {
+		fmt.Println("Failed to get module file name:", err)
+		return ""
+	}
+
+	absolutePath := syscall.UTF16ToString(path[:])
+	//fmt.Printf("Process path: %s\n", absolutePath)
+	return absolutePath
+}
+func killProcess(name string, path string) {
+	isFind := false
+	// 获取当前系统中所有的进程
+	processList, err := ps.Processes()
+	if err != nil {
+		slog.Error("获取进程列表失败:", err)
+		return
+	}
+
+	// 遍历进程列表，模糊匹配进程名并终止匹配到的进程
+	for _, p := range processList {
+		if strings.Contains(strings.ToLower(p.Executable()), strings.ToLower(name)) {
+			isFind = true
+			absolutePath := getProcessPath(uint32(p.Pid()))
+			if strings.HasPrefix(absolutePath, path) {
+				process, err := os.FindProcess(p.Pid())
+				if err != nil {
+					return
+				}
+				err = process.Kill()
+				if err != nil {
+					slog.Error("Failed to terminate process: %s\n", err)
+					return
+				} else {
+					slog.Error("结束进程成功：", name, path)
+				}
+			}
+		}
+	}
+	if !isFind {
+		slog.Error("未找到进程：", name, path)
+	}
+}
+
 func (e *Exec) TestCmdExec(env string, command string, workDir string) error {
 	// 改变当前工作目录
 	_ = os.Chdir(workDir)
@@ -100,11 +160,6 @@ func (e *Exec) TestCmdExec(env string, command string, workDir string) error {
 	defer cancel()
 
 	cmd := exec.Command("cmd", "/c", command)
-	//cmd.SysProcAttr = &syscall.SysProcAttr{
-	//	HideWindow:       true,
-	//	NoInheritHandles: true,
-	//	CreationFlags:    0x10,
-	//}
 	// 设置环境变量
 	if env != "" {
 		if _, ok := Paths.Env[env]; ok {
@@ -124,12 +179,22 @@ func (e *Exec) TestCmdExec(env string, command string, workDir string) error {
 	select {
 	case <-ctx.Done():
 		// 超时后直接返回
-		slog.Info("进程信息：", cmd.Process.Pid)
-		err := cmd.Process.Kill()
-		if err != nil {
-			slog.Error("进程结束出错：", err)
-			return err
+		if env != "" {
+			if strings.HasPrefix(env, "java") {
+				killProcess("java.exe", Paths.Env[env])
+			} else if strings.HasPrefix(env, "python") {
+				killProcess("python.exe", Paths.Env[env])
+			}
 		}
+		compile := regexp.MustCompile("[\\S]+\\.exe")
+		match := compile.FindString(command)
+		slog.Info("匹配：", match)
+		killProcess(match, Paths.Env[env])
+		cmd.Process.Kill()
+		//if err != nil {
+		//	slog.Error("进程结束出错：", err)
+		//	return err
+		//}
 		return nil
 	case err := <-done:
 		if err != nil {
