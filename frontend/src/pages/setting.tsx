@@ -12,13 +12,13 @@ export default function () {
                     设置
                 </div>
                 <ul class="menu">
-                    <li onclick={not}>
+                    <li onclick={not} ondblclick={() => navigate('/setting/debug')}>
                         <a class="w-50 flex justify-start">
                             <div class='i-carbon-settings h-5 w-5'></div>
                             <span>基础设置</span>
                         </a>
                     </li>
-                    <li onclick={() => navigate('/setting/env')} ondblclick={() => navigate('/setting/debug_exe')}>
+                    <li onclick={() => navigate('/setting/env')} ondblclick={() => navigate('/setting/test')}>
                         <a class="flex justify-start">
                             <div class='i-carbon-settings h-5 w-5'></div>
                             <div>环境变量配置</div>

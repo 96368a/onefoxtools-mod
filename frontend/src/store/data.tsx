@@ -1,5 +1,6 @@
 import { GetConfigs, GetENVConfigs, InitConfig, InitEnv, SaveENVConfigs } from 'wailsjs/go/main/CONFIG'
 import type { common, main } from 'wailsjs/go/models'
+import { WindowSetTitle } from 'wailsjs/runtime/runtime'
 
 function createDataStore() {
   const [envConfig, setEnvConfig] = createStore<common.YamlInfo>({} as common.YamlInfo)
@@ -52,6 +53,9 @@ function createDataStore() {
   async function refresConfig() {
     await InitConfig()
     await getData()
+    // 设置窗口标题
+    if (envConfig.title)
+      WindowSetTitle(envConfig.title)
   }
   async function refreshEnv() {
     await InitEnv()
