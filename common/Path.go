@@ -18,8 +18,9 @@ type PathInfo struct {
 }
 
 type YamlInfo struct {
-	Dir string            `yaml:"dir" json:"dir"`
-	Env map[string]string `yaml:"env" json:"env"`
+	Title string            `yaml:"title" json:"title"`
+	Dir   string            `yaml:"dir" json:"dir"`
+	Env   map[string]string `yaml:"env" json:"env"`
 }
 
 var Paths YamlInfo

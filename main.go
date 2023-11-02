@@ -20,12 +20,12 @@ var assets embed.FS
 var icon []byte
 var startTime = time.Now()
 var refreshTime = time.Now()
+var app = NewApp()
 
 func main() {
 	startTime = time.Now()
 	InitLog()
 	// Create an instance of the app structure
-	app := NewApp()
 
 	// Create application with options
 	err := wails.Run(&options.App{

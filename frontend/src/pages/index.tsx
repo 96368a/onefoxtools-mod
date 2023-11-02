@@ -13,7 +13,7 @@ export default function () {
 }
 
 function Index() {
-  const { configs, refresConfig } = DataStore
+  const { configs, envConfig, refresConfig } = DataStore
   const [showSearch, setShowSearch] = createSignal(false)
   const navigate = useNavigate()
 
@@ -64,7 +64,7 @@ function Index() {
               </button>
             </div>
             <div class='justify-center py-2 text-2xl card-title'>
-              <h1>末影工具箱</h1>
+              <h1>{envConfig.title ? envConfig.title : '安全工具箱'}</h1>
             </div>
             <div class="flex justify-center gap-2">
               <input type="search" id="search" class='max-w-xs w-full input input-bordered input-sm' onfocus={() => setShowSearch(true)} />

@@ -1,6 +1,7 @@
 export namespace common {
 	
 	export class YamlInfo {
+	    title: string;
 	    dir: string;
 	    env: {[key: string]: string};
 	
@@ -10,6 +11,7 @@ export namespace common {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.title = source["title"];
 	        this.dir = source["dir"];
 	        this.env = source["env"];
 	    }
