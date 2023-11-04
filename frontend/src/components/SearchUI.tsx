@@ -1,6 +1,6 @@
 import type { main } from 'wailsjs/go/models'
 import PinyinMatch from 'pinyin-match'
-import { Start } from 'wailsjs/go/main/CONFIG'
+import { Start } from 'wailsjs/go/main/GOContext'
 
 export default function Search({ configs, show, setShow }: { configs: main.TypeConfig[]; show: () => boolean; setShow: (b: boolean) => void }) {
   const [searchString, setSearchString] = createSignal('')

@@ -1,26 +1,5 @@
 export namespace common {
 	
-	export class YamlInfo {
-	    title: string;
-	    dir: string;
-	    env: {[key: string]: string};
-	
-	    static createFrom(source: any = {}) {
-	        return new YamlInfo(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.title = source["title"];
-	        this.dir = source["dir"];
-	        this.env = source["env"];
-	    }
-	}
-
-}
-
-export namespace main {
-	
 	export class Config {
 	    index: number;
 	    name: string;
@@ -74,6 +53,22 @@ export namespace main {
 		    }
 		    return a;
 		}
+	}
+	export class YamlInfo {
+	    title: string;
+	    dir: string;
+	    env: {[key: string]: string};
+	
+	    static createFrom(source: any = {}) {
+	        return new YamlInfo(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.title = source["title"];
+	        this.dir = source["dir"];
+	        this.env = source["env"];
+	    }
 	}
 
 }

@@ -1,10 +1,10 @@
-import { GetConfigs, GetENVConfigs, InitConfig, InitEnv, SaveENVConfigs } from 'wailsjs/go/main/CONFIG'
-import type { common, main } from 'wailsjs/go/models'
+import { GetConfigs, GetENVConfigs, InitConfig, InitEnv, SaveENVConfigs } from 'wailsjs/go/main/GOContext'
+import type { common } from 'wailsjs/go/models'
 import { WindowSetTitle } from 'wailsjs/runtime/runtime'
 
 function createDataStore() {
   const [envConfig, setEnvConfig] = createStore<common.YamlInfo>({} as common.YamlInfo)
-  const [configs, setConfigs] = createStore<main.TypeConfig[]>([])
+  const [configs, setConfigs] = createStore<common.TypeConfig[]>([])
   async function getEnv() {
     GetENVConfigs().then((res) => {
       setEnvConfig(res)
