@@ -1,6 +1,7 @@
 package main
 
 import (
+	"changeme/common"
 	"embed"
 	"log"
 	"time"
@@ -24,7 +25,7 @@ var app = NewApp()
 
 func main() {
 	startTime = time.Now()
-	InitLog()
+	common.InitLog()
 	// Create an instance of the app structure
 
 	// Create application with options
@@ -55,7 +56,7 @@ func main() {
 		WindowStartState: options.Normal,
 		Bind: []interface{}{
 			app,
-			&CONFIG{},
+			&GOContext{},
 		},
 		// Windows platform specific options
 		Windows: &windows.Options{

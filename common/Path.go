@@ -25,48 +25,41 @@ type YamlInfo struct {
 
 var Paths YamlInfo
 
-func InitEnv() (bool, error) {
+func InitEnv() error {
 	executable, err := os.Executable()
 	if err != nil {
-		return false, err
+		return err
 	}
 	os.Chdir(filepath.Dir(executable))
+	err = checkConfig()
+	if err != nil {
+		return err
+	}
 	data, err := os.ReadFile("config/base.yml")
 	if err != nil {
 		slog.Error("error:", err)
-		return false, err
+		return err
 	}
 	err = yaml.Unmarshal(data, &Paths)
 	if err != nil {
 		slog.Error("error:", err)
-		return false, err
+		return err
 	}
 	// 将配置文件中的相对路径转为绝对路径
 	if !filepath.IsAbs(Paths.Dir) {
 		Paths.Dir, err = filepath.Abs(Paths.Dir)
 		if err != nil {
 			slog.Error("error:", err)
-			return false, err
+			return err
 		}
 	}
-	//if Paths.Dir != "" {
-	//	stat, err := os.Stat(Paths.Dir)
-	//	if err != nil {
-	//		return false, errors.New("主目录不存在")
-	//	}
-	//	if stat.IsDir() {
-	//		os.Chdir(Paths.Dir)
-	//	} else {
-	//		return false, errors.New("主目录不是目录")
-	//	}
-	//}
 	envs := maps.Clone(Paths.Env)
 	LoadEnv(Paths.Dir)
 	for k, v := range envs {
 		Paths.Env[k] = v
 	}
 	slog.Info("环境配置加载成功~")
-	return true, nil
+	return nil
 }
 
 func LoadEnv(root string) {

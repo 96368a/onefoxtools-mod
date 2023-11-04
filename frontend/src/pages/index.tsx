@@ -1,8 +1,8 @@
 // import { Greet } from 'wailsjs/go/main/App'
-import type { main } from 'wailsjs/go/models'
+import type { common } from 'wailsjs/go/models'
 
 import toast from 'solid-toast'
-import { Start } from '../../wailsjs/go/main/CONFIG'
+import { Start } from '../../wailsjs/go/main/GOContext'
 import Search from '~/components/SearchUI'
 import DataStore from '~/store/data'
 
@@ -36,7 +36,7 @@ function Index() {
     )
   }
 
-  function start(c: main.Config) {
+  function start(c: common.Config) {
     toast.promise(
       (async function () {
         const startTime = new Date().getTime()

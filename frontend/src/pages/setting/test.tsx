@@ -1,4 +1,4 @@
-import { TestCmdExec } from 'wailsjs/go/main/CONFIG'
+import { TestCmdExec } from 'wailsjs/go/main/GOContext'
 import type { main } from 'wailsjs/go/models'
 import DataStore from '~/store/data'
 

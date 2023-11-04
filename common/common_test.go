@@ -171,12 +171,7 @@ func TestWalk(t *testing.T) {
 	}
 }
 
-var (
-	psapidll                = syscall.NewLazyDLL("psapi.dll")
-	procGetModuleFileNameEx = psapidll.NewProc("GetModuleFileNameExW")
-)
-
-func getProcessPath(pid uint32) string {
+func getProcessPath1(pid uint32) string {
 	handle, err := syscall.OpenProcess(syscall.PROCESS_QUERY_INFORMATION, false, pid)
 	if err != nil {
 		fmt.Printf("Failed to open process: %s\n", err)

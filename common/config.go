@@ -1,21 +1,13 @@
-package main
+package common
 
 import (
-	"changeme/common"
-	"context"
 	"errors"
-	"github.com/labstack/gommon/log"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 )
-
-type CONFIG struct {
-	ctx context.Context
-}
 
 type Config struct {
 	Index   int    `json:"index" yaml:"index"`
@@ -33,104 +25,37 @@ type TypeConfig struct {
 
 var Configs []TypeConfig
 
-func (c CONFIG) Start(config Config) error {
-	cmd := &common.Exec{}
-	log.Info("执行命令:", config)
-	err := cmd.CmdExec(config.Env, config.Command, config.Dir)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c CONFIG) TestCmdExec(config Config) error {
-	cmd := &common.Exec{}
-	log.Info("测试命令:", config.Command)
-	err := cmd.TestCmdExec(config.Env, config.Command, config.Dir)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func (c CONFIG) GetConfigs() ([]TypeConfig, error) {
-	return Configs, nil
-}
-
-func (c CONFIG) GetENVConfigs() (common.YamlInfo, error) {
-	return common.Paths, nil
-}
-
-func (c CONFIG) SaveENVConfigs(env common.YamlInfo) error {
-	envs, err := yaml.Marshal(env)
-	if err != nil {
-		return err
-	}
-	//改变目录
-	common.CdExePath()
-	//保存配置文件
-	os.WriteFile("config/base.yml", envs, os.ModePerm)
-	return nil
-}
-
-func (c CONFIG) GetStartTime() time.Time {
-	return startTime
-}
-
-func (c CONFIG) GetRefreshTime() time.Time {
-	return refreshTime
-}
-
-func (c CONFIG) InitEnv() (bool, error) {
-	_, err := common.InitEnv()
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-func (c CONFIG) InitConfig() (bool, error) {
-	refreshTime = time.Now()
-	common.InitEnv()
-	_, err := InitConfig()
-	if err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func checkConfig() bool {
+func checkConfig() error {
 	stat, err := os.Stat("config/tools")
 	if err != nil {
 		os.MkdirAll("config/tools", os.ModePerm)
 	} else if !stat.IsDir() {
-		log.Fatal("配置文件夹不是目录")
-		return false
+		return errors.New("配置文件夹被占用")
 	}
 
 	stat, err = os.Stat("config/base.yml")
 	if err != nil {
-		envs, _ := yaml.Marshal(common.Paths)
+		envs, _ := yaml.Marshal(Paths)
 		os.WriteFile("config/base.yml", envs, os.ModePerm)
 	} else if stat.IsDir() {
-		log.Fatalf("基础配置文件是目录")
-		return false
+		return errors.New("基础配置文件被占用")
 	}
-	return true
+	return nil
 }
 
-func InitConfig() (bool, error) {
+func InitConfig() error {
 	// 获取可执行文件路径，读取目录下配置文件
 	executable, err := os.Executable()
 	if err != nil {
-		return false, err
+		return err
 	}
 	dir := filepath.Dir(executable)
 	os.Chdir(dir)
 
 	// 检查config文件夹
-	isOk := checkConfig()
-	if !isOk {
-		return false, nil
+	err = checkConfig()
+	if err != nil {
+		return err
 	}
 	Configs = make([]TypeConfig, 0)
 	// 遍历config下的yaml文件
@@ -160,10 +85,10 @@ func InitConfig() (bool, error) {
 
 	if err != nil {
 		slog.Error("error: 配置文件夹不存在")
-		return false, errors.New("配置文件夹不存在")
+		return errors.New("配置文件夹不存在")
 	}
-	os.Chdir(common.Paths.Dir)
-	return true, nil
+	os.Chdir(Paths.Dir)
+	return nil
 }
 
 func InitLog() {
