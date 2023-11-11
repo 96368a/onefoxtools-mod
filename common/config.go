@@ -2,10 +2,12 @@ package common
 
 import (
 	"errors"
+	"fmt"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 )
 
@@ -100,4 +102,131 @@ func InitLog() {
 		AddSource: false,
 		Level:     slog.LevelDebug,
 	})))
+}
+
+func GenerateConfig() error {
+	//CdExePath()
+	typeS := `.*wx.StaticBox\(self, wx.ID_ANY, u\"-*([^"]+)-*\"`
+	nameS := `self\.(.+?) = wx.Button\(gui.+?u\"(.+?)\"`
+	namefile := "GUI_Tools_wxpython_gui.py"
+	content, err := os.ReadFile(namefile)
+	if err != nil {
+		slog.Error("读取文件失败：%s\n", err)
+		return err
+	}
+	bindContent := string(content)
+	// 匹配工具类型
+	reType := regexp.MustCompile(typeS)
+	// 匹配类型下有哪些工具
+	reName := regexp.MustCompile(nameS)
+	var types []string
+	var names [][]string
+	var realNames [][]string
+	var currentNames []string
+	var currentRealNames []string
+	for _, line := range strings.Split(bindContent, "\n") {
+		if matches := reType.FindStringSubmatch(line); len(matches) > 1 {
+			// 匹配类型
+			t := strings.ReplaceAll(matches[1], "-", "")
+			types = append(types, t)
+			if len(currentNames) > 0 {
+				names = append(names, currentNames)
+				realNames = append(realNames, currentRealNames)
+				currentNames = nil
+				currentRealNames = nil
+			}
+		} else if matches := reName.FindStringSubmatch(line); len(matches) > 1 {
+			// 匹配工具
+			//name := matches[1]
+			currentNames = append(currentNames, matches[1])
+			currentRealNames = append(currentRealNames, matches[2])
+		}
+	}
+	// 加入最后一个工具
+	if len(currentNames) > 0 {
+		names = append(names, currentNames)
+		realNames = append(realNames, currentRealNames)
+	}
+
+	var datas []TypeConfig
+	content, err = os.ReadFile("GUI_Tools.py")
+	if err != nil {
+		slog.Error("读取文件失败：%s\n", err)
+		return err
+	}
+	commandContent := strings.ReplaceAll(string(content), "\n", "")
+	i := 0
+	for index, n := range names {
+		var d []Config
+		for ii, name := range n {
+			// 匹配绑定事件
+			s := `self\.` + name + `\.Bind\(wx.EVT_BUTTON, self\.(.+)\)`
+			clickRe := regexp.MustCompile(s)
+			clickMatches := clickRe.FindStringSubmatch(bindContent)
+			if len(clickMatches) > 1 {
+				// 根据绑定事件匹配命令
+				clickFunction := clickMatches[1]
+				s = `def ` + clickFunction + `\(self, event\):.+?subprocess.Popen\((.+?),.+?\)`
+				commandRe := regexp.MustCompile(s)
+				commandMatches := commandRe.FindStringSubmatch(commandContent)
+				if len(commandMatches) > 1 {
+					command := strings.TrimSpace(commandMatches[1])
+					command = regexp.MustCompile(`["'+]`).ReplaceAllString(command, " ")
+					command = regexp.MustCompile(`\s+`).ReplaceAllString(command, " ")
+					command = strings.TrimSpace(command)
+					env := ""
+					javaRe := regexp.MustCompile(`(java\d{1,2})_path`)
+					javaMatches := javaRe.FindStringSubmatch(command)
+					if len(javaMatches) > 0 {
+						env = javaMatches[1]
+						command := javaRe.ReplaceAllString(command, "java")
+						d = append(d, Config{
+							Name:    realNames[index][ii],
+							Command: command,
+							Env:     env,
+							Index:   ii + 1,
+						})
+					} else {
+						d = append(d, Config{
+							Name:    realNames[index][ii],
+							Command: command,
+							Index:   ii + 1,
+						})
+					}
+					i++
+				}
+			}
+		}
+		datas = append(datas, TypeConfig{
+			Type:   types[index],
+			Config: d,
+			Index:  index + 1,
+		})
+	}
+
+	if err := os.MkdirAll("config/tools", 0777); err != nil {
+		slog.Error("创建目录失败:", err)
+		return err
+	}
+	for _, data := range datas {
+		filename := fmt.Sprintf("config/tools/%s.yml", data.Type)
+		file, err := os.Create(filename)
+		if err != nil {
+			slog.Error("创建文件失败：%s\n", err)
+			return err
+		}
+		dataBytes, err := yaml.Marshal(data)
+		if err != nil {
+			slog.Error("转换为YAML失败：%s\n\n", err)
+			continue
+		}
+
+		if _, err = file.Write(dataBytes); err != nil {
+			slog.Error("写入文件失败：%s\n\n", err)
+			continue
+		}
+		slog.Info("写入文件成功：%s\n", filename)
+		file.Close()
+	}
+	return nil
 }

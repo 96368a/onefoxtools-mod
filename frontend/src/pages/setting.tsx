@@ -24,7 +24,7 @@ export default function () {
                             <div>环境变量配置</div>
                         </a>
                     </li>
-                    <li onclick={not}>
+                    <li onclick={() => navigate('/setting/tools')}>
                         <a class="flex justify-start">
                             <div class='i-carbon-settings h-5 w-5'></div>
                             <span>工具设置</span>
