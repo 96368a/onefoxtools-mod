@@ -5,6 +5,7 @@ import (
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -154,87 +155,86 @@ func walkDir1(dir, fileName string, maxDepth int, resultChan chan<- string) {
 
 func TestParse(t *testing.T) {
 	os.Chdir("D:\\code_field\\go_code\\wails\\OneFoxTools\\build\\bin\\test")
-	types := []string{}
-	names := [][]string{}
+
 	typeS := `.*wx.StaticBox\(self, wx.ID_ANY, u\"-*([^"]+)-*\"`
 	nameS := `self\.(.+?) = wx.Button\(gui.+?u\"(.+?)\"`
-	namefile := ""
-	if _, err := os.Stat("GUI_Tools_name.py"); err == nil {
-		namefile = "GUI_Tools_name.py"
-	} else if _, err := os.Stat("GUI_Tools_wxpython_gui.py"); err == nil {
-		namefile = "GUI_Tools_wxpython_gui.py"
-	} else {
-		fmt.Println("没有找到GUI_Tools_name.py或GUI_Tools_wxpython_gui.py")
-		os.Exit(0)
-	}
-	content, err := ioutil.ReadFile(namefile)
+	namefile := "GUI_Tools_wxpython_gui.py"
+	content, err := os.ReadFile(namefile)
 	if err != nil {
-		fmt.Println("读取文件失败:", err)
-		os.Exit(1)
+		log.Fatalf("读取文件失败：%s\n", err)
 	}
-	c := string(content)
-	lines := strings.Split(string(content), "\n")
-	n := []string{}
-	for _, line := range lines {
-		if matched, _ := regexp.MatchString(typeS, line); matched {
-			re := regexp.MustCompile(typeS)
-			t := re.FindStringSubmatch(line)[1]
+	bindContent := string(content)
+	// 匹配工具类型
+	reType := regexp.MustCompile(typeS)
+	// 匹配类型下有哪些工具
+	reName := regexp.MustCompile(nameS)
+	var types []string
+	var names [][]string
+	var currentNames []string
+	for _, line := range strings.Split(bindContent, "\n") {
+		if matches := reType.FindStringSubmatch(line); len(matches) > 1 {
+			// 匹配类型
+			t := matches[1]
 			types = append(types, t)
-			if len(n) > 0 {
-				names = append(names, n)
+			if len(currentNames) > 0 {
+				names = append(names, currentNames)
+				currentNames = nil
 			}
-			n = []string{}
-		}
-		if matched, _ := regexp.MatchString(nameS, line); matched {
-			re := regexp.MustCompile(nameS)
-			name := re.FindStringSubmatch(line)
-			n = append(n, name[1])
+		} else if matches := reName.FindStringSubmatch(line); len(matches) > 1 {
+			// 匹配工具
+			name := matches[1]
+			currentNames = append(currentNames, name)
 		}
 	}
-	names = append(names, n)
+	// 加入最后一个工具
+	if len(currentNames) > 0 {
+		names = append(names, currentNames)
+	}
 
-	datas := []TypeConfig{}
-	content, err = ioutil.ReadFile("GUI_Tools.py")
+	var datas []TypeConfig
+	content, err = os.ReadFile("GUI_Tools.py")
 	if err != nil {
-		fmt.Println("读取文件失败:", err)
-		os.Exit(1)
+		log.Fatalf("读取文件失败：%s\n", err)
 	}
-	cc := string(content)
-	cc = strings.ReplaceAll(cc, "\n", "")
+	commandContent := strings.ReplaceAll(string(content), "\n", "")
 	i := 0
 	for index, n := range names {
-		d := []Config{}
+		var d []Config
 		for _, name := range n {
+			// 匹配绑定事件
 			s := `self\.` + name + `\.Bind\(wx.EVT_BUTTON, self\.(.+)\)`
-			re := regexp.MustCompile(s)
-			click := re.FindStringSubmatch(c)
-			s = `def ` + click[1] + `\(self, event\):.+?subprocess.Popen\((.+?),.+?\)`
-			re = regexp.MustCompile(s)
-			rr := re.FindStringSubmatch(cc)
-			if len(rr) > 0 {
-				command := rr[1]
-				command = strings.TrimSpace(command)
-				command = strings.ReplaceAll(command, `\"`, "")
-				command = strings.ReplaceAll(command, `'`, "")
-				command = regexp.MustCompile(`\s+`).ReplaceAllString(command, " ")
-				env := ""
-				java := regexp.MustCompile(`(java\d{1,2})_path`).FindStringSubmatch(command)
-				if len(java) > 0 {
-					env = java[1]
-					command = strings.ReplaceAll(command, `java\d{1,2}_path`, "java")
-					d = append(d, Config{
-						Name:    name,
-						Command: command,
-						Env:     env,
-					})
-				} else {
-					d = append(d, Config{
-						Name:    name,
-						Command: command,
-					})
+			clickRe := regexp.MustCompile(s)
+			clickMatches := clickRe.FindStringSubmatch(bindContent)
+			if len(clickMatches) > 1 {
+				// 根据绑定事件匹配命令
+				clickFunction := clickMatches[1]
+				s = `def ` + clickFunction + `\(self, event\):.+?subprocess.Popen\((.+?),.+?\)`
+				commandRe := regexp.MustCompile(s)
+				commandMatches := commandRe.FindStringSubmatch(commandContent)
+				if len(commandMatches) > 1 {
+					command := strings.TrimSpace(commandMatches[1])
+					command = regexp.MustCompile(`["'+]`).ReplaceAllString(command, " ")
+					command = regexp.MustCompile(`\s+`).ReplaceAllString(command, " ")
+					command = strings.TrimSpace(command)
+					env := ""
+					javaMatches := regexp.MustCompile(`(java\d{1,2})_path`).FindStringSubmatch(command)
+					if len(javaMatches) > 0 {
+						env = javaMatches[1]
+						command = strings.ReplaceAll(command, `java\d{1,2}_path`, "java")
+						d = append(d, Config{
+							Name:    name,
+							Command: command,
+							Env:     env,
+						})
+					} else {
+						d = append(d, Config{
+							Name:    name,
+							Command: command,
+						})
+					}
+					fmt.Println(command)
+					i++
 				}
-				fmt.Println(command)
-				i++
 			}
 		}
 		datas = append(datas, TypeConfig{
@@ -242,33 +242,32 @@ func TestParse(t *testing.T) {
 			Config: d,
 		})
 	}
-	fmt.Println(i)
 
-	if _, err := os.Stat("config"); os.IsNotExist(err) {
-		os.Mkdir("config", 0755)
+	//if _, err := os.Stat("config/tools"); os.IsNotExist(err) {
+	//	os.MkdirAll("config/tools", 0755)
+	//}
+	if err := os.MkdirAll("config/tools", 0755); err != nil {
+		fmt.Println("创建目录失败:", err)
+		os.Exit(1)
 	}
 	for _, data := range datas {
-		filename := fmt.Sprintf("config/%s.yml", data.Type)
+		filename := fmt.Sprintf("config/tools/%s.yml", data.Type)
 		file, err := os.Create(filename)
 		if err != nil {
-			fmt.Println("创建文件失败:", err)
-			os.Exit(1)
+			log.Fatalf("创建文件失败：%s\n", err)
 		}
-		defer file.Close()
-
 		dataBytes, err := yaml.Marshal(data)
 		if err != nil {
-			fmt.Println("转换为YAML失败:", err)
-			os.Exit(1)
+			log.Printf("转换为YAML失败：%s\n\n", err)
+			continue
 		}
 
-		_, err = file.Write(dataBytes)
-		if err != nil {
-			fmt.Println("写入文件失败:", err)
-			os.Exit(1)
+		if _, err = file.Write(dataBytes); err != nil {
+			log.Printf("写入文件失败：%s\n\n", err)
+			continue
 		}
+		file.Close()
 	}
-	fmt.Println("完成")
 }
 
 func TestParse1(t *testing.T) {
