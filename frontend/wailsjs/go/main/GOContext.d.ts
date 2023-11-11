@@ -3,6 +3,8 @@
 import {common} from '../models';
 import {time} from '../models';
 
+export function GenerateConfig():Promise<void>;
+
 export function GetConfigs():Promise<Array<common.TypeConfig>>;
 
 export function GetENVConfigs():Promise<common.YamlInfo>;
@@ -11,9 +13,9 @@ export function GetRefreshTime():Promise<time.Time>;
 
 export function GetStartTime():Promise<time.Time>;
 
-export function InitConfig():Promise<boolean>;
+export function InitConfig():Promise<void>;
 
-export function InitEnv():Promise<boolean>;
+export function InitEnv():Promise<void>;
 
 export function SaveENVConfigs(arg1:common.YamlInfo):Promise<void>;
 

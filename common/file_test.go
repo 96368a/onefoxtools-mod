@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -170,7 +169,9 @@ func TestParse(t *testing.T) {
 	reName := regexp.MustCompile(nameS)
 	var types []string
 	var names [][]string
+	var realNames [][]string
 	var currentNames []string
+	var currentRealNames []string
 	for _, line := range strings.Split(bindContent, "\n") {
 		if matches := reType.FindStringSubmatch(line); len(matches) > 1 {
 			// 匹配类型
@@ -178,17 +179,21 @@ func TestParse(t *testing.T) {
 			types = append(types, t)
 			if len(currentNames) > 0 {
 				names = append(names, currentNames)
+				realNames = append(realNames, currentRealNames)
 				currentNames = nil
+				currentRealNames = nil
 			}
 		} else if matches := reName.FindStringSubmatch(line); len(matches) > 1 {
 			// 匹配工具
-			name := matches[1]
-			currentNames = append(currentNames, name)
+			//name := matches[1]
+			currentNames = append(currentNames, matches[1])
+			currentRealNames = append(currentRealNames, matches[2])
 		}
 	}
 	// 加入最后一个工具
 	if len(currentNames) > 0 {
 		names = append(names, currentNames)
+		realNames = append(realNames, currentRealNames)
 	}
 
 	var datas []TypeConfig
@@ -200,7 +205,7 @@ func TestParse(t *testing.T) {
 	i := 0
 	for index, n := range names {
 		var d []Config
-		for _, name := range n {
+		for ii, name := range n {
 			// 匹配绑定事件
 			s := `self\.` + name + `\.Bind\(wx.EVT_BUTTON, self\.(.+)\)`
 			clickRe := regexp.MustCompile(s)
@@ -222,14 +227,16 @@ func TestParse(t *testing.T) {
 						env = javaMatches[1]
 						command = strings.ReplaceAll(command, `java\d{1,2}_path`, "java")
 						d = append(d, Config{
-							Name:    name,
+							Name:    realNames[index][ii],
 							Command: command,
 							Env:     env,
+							Index:   ii + 1,
 						})
 					} else {
 						d = append(d, Config{
-							Name:    name,
+							Name:    realNames[index][ii],
 							Command: command,
+							Index:   ii + 1,
 						})
 					}
 					fmt.Println(command)
@@ -240,6 +247,7 @@ func TestParse(t *testing.T) {
 		datas = append(datas, TypeConfig{
 			Type:   types[index],
 			Config: d,
+			Index:  index + 1,
 		})
 	}
 
@@ -272,152 +280,8 @@ func TestParse(t *testing.T) {
 
 func TestParse1(t *testing.T) {
 	os.Chdir("D:\\code_field\\go_code\\wails\\OneFoxTools\\build\\bin\\test")
-
-	fileName, err := getFileName()
+	err := GenerateConfig()
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return
 	}
-
-	content, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		fmt.Println("读取文件失败:", err)
-		os.Exit(1)
-	}
-
-	types, names, err := parseContent(string(content))
-	if err != nil {
-		fmt.Println("解析内容失败:", err)
-		os.Exit(1)
-	}
-
-	datas, err := processData(types, names, string(content))
-	if err != nil {
-		fmt.Println("处理数据失败:", err)
-		os.Exit(1)
-	}
-
-	err = saveData(datas)
-	if err != nil {
-		fmt.Println("保存数据失败:", err)
-		os.Exit(1)
-	}
-
-	fmt.Println("完成")
-}
-
-func getFileName() (string, error) {
-	fileNames := []string{"GUI_Tools_name.py", "GUI_Tools_wxpython_gui.py"}
-	for _, fileName := range fileNames {
-		if _, err := os.Stat(fileName); err == nil {
-			return fileName, nil
-		}
-	}
-	return "", fmt.Errorf("没有找到GUI_Tools_name.py或GUI_Tools_wxpython_gui.py")
-}
-
-func parseContent(content string) ([]string, [][]string, error) {
-	var types []string
-	var names [][]string
-	var currentNames []string
-
-	typeS := regexp.MustCompile(`.*wx.StaticBox\(self, wx.ID_ANY, u\"-*([^"]+)-*\"`)
-	nameS := regexp.MustCompile(`self\.(.+?) = wx.Button\(gui.+?u\"(.+?)\"`)
-
-	for _, line := range strings.Split(content, "\n") {
-		if typeS.MatchString(line) {
-			types = append(types, typeS.FindStringSubmatch(line)[1])
-			if len(currentNames) > 0 {
-				names = append(names, currentNames)
-			}
-			currentNames = []string{}
-		}
-		if nameS.MatchString(line) {
-			name := nameS.FindStringSubmatch(line)
-			currentNames = append(currentNames, name[1])
-		}
-	}
-	names = append(names, currentNames)
-	return types, names, nil
-}
-
-func processData(types []string, names [][]string, content string) ([]TypeConfig, error) {
-	var datas []TypeConfig
-
-	for index, currentNames := range names {
-		var configs []Config
-		for _, name := range currentNames {
-			config, err := processName(name, content)
-			if err != nil {
-				return nil, err
-			}
-			configs = append(configs, config)
-		}
-		datas = append(datas, TypeConfig{
-			Type:   types[index],
-			Config: configs,
-		})
-	}
-	return datas, nil
-}
-
-func processName(name, content string) (Config, error) {
-	bindS := regexp.MustCompile(`self\.` + name + `\.Bind\(wx.EVT_BUTTON, self\.(.+)\)`)
-	commandS := regexp.MustCompile(`def ` + bindS.FindStringSubmatch(content)[1] + `\(self, event\):.+?subprocess.Popen\((.+?),.+?\)`)
-	javaS := regexp.MustCompile(`(java\d{1,2})_path`)
-
-	command := commandS.FindStringSubmatch(content)[1]
-	command = strings.TrimSpace(command)
-	command = strings.ReplaceAll(command, `\"`, "")
-	command = strings.ReplaceAll(command, `'`, "")
-	command = regexp.MustCompile(`\s+`).ReplaceAllString(command, " ")
-
-	var env string
-	java := javaS.FindStringSubmatch(command)
-	if len(java) > 0 {
-		env = java[1]
-		command = strings.ReplaceAll(command, `java\d{1,2}_path`, "java")
-	}
-
-	return Config{
-		Name:    name,
-		Command: command,
-		Env:     env,
-	}, nil
-}
-
-func saveData(datas []TypeConfig) error {
-	err := os.MkdirAll("config", 0755)
-	if err != nil {
-		return fmt.Errorf("创建目录失败: %w", err)
-	}
-
-	for _, data := range datas {
-		err := saveDataToFile(data)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-func saveDataToFile(data TypeConfig) error {
-	fileName := fmt.Sprintf("config/%s.yml", data.Type)
-	file, err := os.Create(fileName)
-	if err != nil {
-		return fmt.Errorf("创建文件失败: %w", err)
-	}
-	defer file.Close()
-
-	dataBytes, err := yaml.Marshal(data)
-	if err != nil {
-		return fmt.Errorf("转换为YAML失败: %w", err)
-	}
-
-	_, err = file.Write(dataBytes)
-	if err != nil {
-		return fmt.Errorf("写入文件失败: %w", err)
-	}
-
-	return nil
 }

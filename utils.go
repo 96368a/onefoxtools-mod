@@ -62,18 +62,13 @@ func (c GOContext) GetRefreshTime() time.Time {
 }
 
 func (c GOContext) InitEnv() error {
-	err := common.InitEnv()
-	if err != nil {
-		return err
-	}
-	return nil
+	return common.InitEnv()
 }
 func (c GOContext) InitConfig() error {
 	refreshTime = time.Now()
 	common.InitEnv()
-	err := common.InitConfig()
-	if err != nil {
-		return err
-	}
-	return nil
+	return common.InitConfig()
+}
+func (c GOContext) GenerateConfig() error {
+	return common.GenerateConfig()
 }
