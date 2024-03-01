@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+var wailsContext *context.Context
+
 // App struct
 type App struct {
 	ctx context.Context
@@ -21,13 +23,14 @@ func NewApp() *App {
 func (a *App) startup(ctx context.Context) {
 	// Perform your setup here
 	a.ctx = ctx
+	wailsContext = &ctx
 }
 
 // domReady is called after front-end resources have been loaded
 func (a App) domReady(ctx context.Context) {
 	// Add your action here
 	cost := time.Since(startTime)
-	slog.Info("启动耗时:", cost.Seconds())
+	slog.Info("初始化耗时:", cost.Seconds())
 }
 
 // beforeClose is called when the application is about to quit,

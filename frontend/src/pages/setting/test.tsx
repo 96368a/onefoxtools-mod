@@ -1,11 +1,11 @@
 import { TestCmdExec } from 'wailsjs/go/main/GOContext'
-import type { main } from 'wailsjs/go/models'
+import type { common } from 'wailsjs/go/models'
 import DataStore from '~/store/data'
 
 export default function () {
   const { configs } = DataStore
   const tools = createMemo(() => {
-    return configs.reduce((tools, c) => tools.concat(c.config), [] as main.Config[])
+    return configs.reduce((tools, c) => tools.concat(c.config), [] as common.Config[])
   })
   const [status, setStatus] = createStore<Array<number>>(Array.from({ length: tools().length }, () => 0))
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -26,7 +26,7 @@ export default function () {
     TestAll(configs, 0)
   }
 
-  async function TestAll(configs: main.Config[], i: number) {
+  async function TestAll(configs: common.Config[], i: number) {
     try {
       if (flag())
         return
@@ -87,7 +87,7 @@ export default function () {
                     </table>
                 </div>
             </div>
-            <dialog ref={dialog} id="dialog_warn" class="modal">
+            <dialog ref={dom => dialog = dom} id="dialog_warn" class="modal">
                 <div class="modal-box">
                     <h3 class="text-lg font-bold">⚠️警告⚠️</h3>
                     <p class="py-4">测试会把所有工具全都启动，可能会导致电脑卡死！！！</p>
