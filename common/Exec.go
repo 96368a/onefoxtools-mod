@@ -66,7 +66,7 @@ func (e *Exec) CmdExec(env string, command string, workDir string) error {
 	// 设置环境变量
 	if env != "" {
 		if _, ok := Paths.Env[env]; ok {
-			cmd.Env = append(os.Environ(), "PATH="+Paths.Env[env])
+			cmd.Env = append(os.Environ(), "PATH="+Paths.GetCurrentEnv(env))
 		}
 	}
 	err := cmd.Start()
@@ -163,7 +163,7 @@ func (e *Exec) TestCmdExec(env string, command string, workDir string) error {
 	// 设置环境变量
 	if env != "" {
 		if _, ok := Paths.Env[env]; ok {
-			cmd.Env = append(os.Environ(), "PATH="+Paths.Env[env])
+			cmd.Env = append(os.Environ(), "PATH="+Paths.GetCurrentEnv(env))
 		}
 	}
 	err := cmd.Start()
@@ -181,15 +181,15 @@ func (e *Exec) TestCmdExec(env string, command string, workDir string) error {
 		// 超时后直接返回
 		if env != "" {
 			if strings.HasPrefix(env, "java") {
-				killProcess("java.exe", Paths.Env[env])
+				killProcess("java.exe", Paths.GetCurrentEnv(env))
 			} else if strings.HasPrefix(env, "python") {
-				killProcess("python.exe", Paths.Env[env])
+				killProcess("python.exe", Paths.GetCurrentEnv(env))
 			}
 		}
 		compile := regexp.MustCompile("[\\S]+\\.exe")
 		match := compile.FindString(command)
 		slog.Info("匹配：", match)
-		killProcess(match, Paths.Env[env])
+		killProcess(match, Paths.GetCurrentEnv(env))
 		cmd.Process.Kill()
 		//if err != nil {
 		//	slog.Error("进程结束出错：", err)

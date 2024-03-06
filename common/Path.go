@@ -4,6 +4,7 @@ import (
 	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -18,18 +19,59 @@ type PathInfo struct {
 }
 
 type YamlInfo struct {
-	Title string            `yaml:"title" json:"title"`
-	Dir   string            `yaml:"dir" json:"dir"`
-	Env   map[string]string `yaml:"env" json:"env"`
+	Title string                `yaml:"title" json:"title"`
+	Dir   string                `yaml:"dir" json:"dir"`
+	Env   map[string]*EnvConfig `yaml:"env" json:"env"`
+}
+
+type EnvConfig struct {
+	Current int      `yaml:"current" json:"current"`
+	List    []string `yaml:"list" json:"list"`
+}
+
+func (i YamlInfo) AppendEnv(name string, env string) {
+	if _, ok := i.Env[name]; !ok {
+		// 环境变量不存在，则创建
+		i.Env[name] = &EnvConfig{
+			Current: 0,
+			List:    []string{env},
+		}
+
+	} else {
+		//  检查环境变量是否已经存在
+		exists := false
+		for _, value := range i.Env[name].List {
+			if value == env {
+				exists = true
+				break
+			}
+		}
+		if !exists {
+			i.Env[name].List = append(i.Env[name].List, env)
+		}
+	}
+}
+
+func (i YamlInfo) GetCurrentEnv(name string) string {
+	return i.Env[name].List[i.Env[name].Current]
+}
+
+func (e EnvConfig) AppendEnv(env string) {
+	if e.List == nil {
+		e.List = make([]string, 0)
+	}
+	e.List = append(e.List, env)
 }
 
 var Paths YamlInfo
 
+// 初始化环境变量
 func InitEnv() error {
 	executable, err := os.Executable()
 	if err != nil {
 		return err
 	}
+	// 切换到可执行文件所在目录
 	os.Chdir(filepath.Dir(executable))
 	err = checkConfig()
 	if err != nil {
@@ -62,6 +104,7 @@ func InitEnv() error {
 	return nil
 }
 
+// 加载java及python环境
 func LoadEnv(root string) {
 	exes := []string{"java.exe", "python.exe"}
 	resultChan := make(chan string)
@@ -95,24 +138,25 @@ func LoadEnv(root string) {
 		r, _ := regexp.Compile("^1\\.(\\d)\\.\\d+")
 		ver := r.FindStringSubmatch(j[0])
 		if len(ver) == 2 {
-			Paths.Env["java"+ver[1]] = j[1]
+			Paths.AppendEnv("java"+ver[1], j[1])
 			continue
 		}
 		//java8以上自适应
 		r, _ = regexp.Compile("(\\d+)\\.\\d+\\.\\d+")
 		ver = r.FindStringSubmatch(j[0])
 		if len(ver) == 2 {
-			Paths.Env["java"+ver[1]] = j[1]
+			Paths.AppendEnv("java"+ver[1], j[1])
 		}
 	}
 	// 配置python环境变量
 	for _, p := range pythons {
 		if strings.HasPrefix(p[0], "3.") {
-			Paths.Env["python3"] = p[1]
-			Paths.Env["python"] = p[1]
+			Paths.Env["python3"].AppendEnv(p[1])
+			Paths.Env["python"].AppendEnv(p[1])
 			break
 		}
 	}
+	log.Print(Paths.Env)
 }
 
 func getPythonVersion(path string) ([]string, error) {
