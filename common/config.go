@@ -228,5 +228,6 @@ func GenerateConfig() error {
 		slog.Info("写入文件成功：%s\n", filename)
 		file.Close()
 	}
+	LoadEnv(Paths.Dir)
 	return nil
 }

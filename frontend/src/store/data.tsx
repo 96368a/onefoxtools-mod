@@ -1,4 +1,4 @@
-import { GetConfigs, GetENVConfigs, InitConfig, InitEnv, SaveENVConfigs } from 'wailsjs/go/main/GOContext'
+import { GetConfigs, GetENVConfigs, InitConfig, SaveENVConfigs } from 'wailsjs/go/main/GOContext'
 import type { common } from 'wailsjs/go/models'
 import { WindowSetTitle } from 'wailsjs/runtime/runtime'
 
@@ -16,15 +16,15 @@ function createDataStore() {
     SaveENVConfigs(envConfig!)
   }
   async function updateEnv(key: string, path: string) {
-    if (!envConfig)
-      return
-    setEnvConfig({
-      ...envConfig,
-      env: {
-        ...envConfig.env,
-        [key]: path,
-      },
-    })
+    // if (!envConfig)
+    //   return
+    // setEnvConfig({
+    //   ...envConfig,
+    //   env: {
+    //     ...envConfig.env,
+    //     [key]: path,
+    //   },
+    // })
   }
   async function getData() {
     GetConfigs().then((result) => {
@@ -58,7 +58,6 @@ function createDataStore() {
       WindowSetTitle(envConfig.title)
   }
   async function refreshEnv() {
-    await InitEnv()
     GetENVConfigs().then((res) => {
       setEnvConfig(res)
     })

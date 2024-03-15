@@ -1,10 +1,8 @@
 package common
 
 import (
-	"golang.org/x/exp/maps"
 	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -95,11 +93,11 @@ func InitEnv() error {
 			return err
 		}
 	}
-	envs := maps.Clone(Paths.Env)
-	LoadEnv(Paths.Dir)
-	for k, v := range envs {
-		Paths.Env[k] = v
-	}
+	//envs := maps.Clone(Paths.Env)
+	//LoadEnv(Paths.Dir)
+	//for k, v := range envs {
+	//	Paths.Env[k] = v
+	//}
 	slog.Info("环境配置加载成功~")
 	return nil
 }
@@ -156,7 +154,12 @@ func LoadEnv(root string) {
 			break
 		}
 	}
-	log.Print(Paths.Env)
+	marshal, err := yaml.Marshal(Paths)
+	if err != nil {
+		return
+	}
+	os.WriteFile("config/base.yml", marshal, 0644)
+	slog.Info("环境变量保存成功", Paths.Env)
 }
 
 func getPythonVersion(path string) ([]string, error) {

@@ -1,8 +1,12 @@
+import toast from 'solid-toast'
 import { GenerateConfig } from 'wailsjs/go/main/GOContext'
 
 export default () => {
   function genConfig() {
-    GenerateConfig().catch((err) => {
+    GenerateConfig().then(() => {
+      toast.success('生成配置文件成功')
+    }).catch((err) => {
+      toast.error('生成配置文件出错')
       console.error(err)
     })
   }

@@ -2,7 +2,7 @@ import toast from 'solid-toast'
 import DataStore from '~/store/data'
 
 export default function () {
-  const { getEnv, envConfig, saveEnv, updateEnv, refreshEnv } = DataStore
+  const { getEnv, envConfig, saveEnv, refreshEnv } = DataStore
   const envs = createMemo<Array<Array<string>>>(() => {
     if (envConfig && envConfig!.env)
       return Object.entries(envConfig!.env)

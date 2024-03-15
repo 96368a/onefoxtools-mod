@@ -21,8 +21,8 @@ export default function App() {
       toast.error(msg)
     })
     themeChange()
-    await refreshEnv()
-    refresConfig().then(() => {
+    refresConfig().then(async () => {
+      await refreshEnv()
       GetStartTime().then((t) => {
         const startTime = new Date(t).getTime()
         const endTime = new Date().getTime()
