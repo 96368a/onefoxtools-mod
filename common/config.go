@@ -37,8 +37,9 @@ func checkConfig() error {
 
 	stat, err = os.Stat("config/base.yml")
 	if err != nil {
-		envs, _ := yaml.Marshal(Paths)
-		os.WriteFile("config/base.yml", envs, os.ModePerm)
+		return err
+		//envs, _ := yaml.Marshal(Paths)
+		//os.WriteFile("config/base.yml", envs, os.ModePerm)
 	} else if stat.IsDir() {
 		return errors.New("基础配置文件被占用")
 	}

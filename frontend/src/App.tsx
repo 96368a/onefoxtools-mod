@@ -20,6 +20,9 @@ export default function App() {
     EventsOn('toast.error', (msg: string) => {
       toast.error(msg)
     })
+    EventsOn('navigate', (path: string) => {
+      window.location.href = path
+    })
     themeChange()
     refresConfig().then(async () => {
       await refreshEnv()
