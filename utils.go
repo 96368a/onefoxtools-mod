@@ -3,9 +3,7 @@ package main
 import (
 	"changeme/common"
 	"context"
-	"errors"
 	"github.com/labstack/gommon/log"
-	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gopkg.in/yaml.v3"
 	"os"
 	"time"
@@ -70,14 +68,17 @@ func (c GOContext) InitConfig() error {
 	refreshTime = time.Now()
 	if err := common.InitEnv(); err != nil {
 		// 配置文件不存在，跳转到初始化页面
-		if errors.Is(err, os.ErrNotExist) {
-			runtime.EventsEmit(*wailsContext, "navigate", "/init")
-		} else {
-			return err
-		}
+		//if errors.Is(err, os.ErrNotExist) {
+		//	runtime.EventsEmit(*wailsContext, "navigate", "/init")
+		//} else {
+		return err
+		//}
 	}
 	return common.InitConfig()
 }
 func (c GOContext) GenerateConfig() error {
 	return common.GenerateConfig()
+}
+func (c GOContext) Exit() {
+	os.Exit(0)
 }

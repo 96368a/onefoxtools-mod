@@ -1,4 +1,4 @@
-import { WindowSetDarkTheme, WindowSetLightTheme } from 'wailsjs/runtime/runtime'
+import { WindowSetDarkTheme, WindowSetLightTheme } from '../../wailsjs/runtime/runtime'
 
 export default function Footer() {
   const [isDark, setIsDark] = createSignal(false)
@@ -7,16 +7,16 @@ export default function Footer() {
     // toggleDark()
     setIsDark(document.documentElement.getAttribute('data-theme') === 'dark')
     if (isDark()) {
-      WindowSetLightTheme()
       document.documentElement.setAttribute('data-theme', 'light')
+      WindowSetLightTheme()
     }
     else {
-      WindowSetDarkTheme()
       document.documentElement.setAttribute('data-theme', 'dark')
+      WindowSetDarkTheme()
     }
   }
   return (
-    <nav class="mt-6 inline-flex gap-2 text-xl">
+    <nav class="m-y-6 inline-flex justify-center gap-2 text-xl">
       <button
         class="icon-btn i-carbon-home"
         title="主页"

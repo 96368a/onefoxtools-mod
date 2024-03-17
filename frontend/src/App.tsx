@@ -36,7 +36,7 @@ export default function App() {
     })
   })
   return (
-    <main class="bg-base-200 text-center font-sans text-gray-700 dark:text-gray-200">
+    <main class="h-screen flex flex-col bg-base-200 text-center font-sans text-gray-700 dark:text-gray-200">
       <Toaster position='top-left' />
       <KeepAliveProvider>
         <Router>
