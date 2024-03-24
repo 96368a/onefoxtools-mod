@@ -13,18 +13,7 @@ function createDataStore() {
   async function saveEnv() {
     if (!envConfig)
       return
-    SaveENVConfigs(envConfig!)
-  }
-  async function updateEnv(key: string, path: string) {
-    // if (!envConfig)
-    //   return
-    // setEnvConfig({
-    //   ...envConfig,
-    //   env: {
-    //     ...envConfig.env,
-    //     [key]: path,
-    //   },
-    // })
+    SaveENVConfigs(envConfig)
   }
   async function getData() {
     GetConfigs().then((result) => {
@@ -65,7 +54,7 @@ function createDataStore() {
       setEnvConfig(res)
     })
   }
-  return { configs, getData, refresConfig, refreshEnv, getEnv, envConfig, saveEnv, updateEnv }
+  return { configs, getData, refresConfig, refreshEnv, getEnv, envConfig, saveEnv }
 }
 
 export default createRoot(createDataStore)

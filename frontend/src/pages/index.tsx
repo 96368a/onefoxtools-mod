@@ -14,7 +14,7 @@ export default () => {
       GetStartTime().then((t) => {
         const startTime = new Date(t).getTime()
         const endTime = new Date().getTime()
-        toast.success(`index加载完成，耗时${(endTime - startTime) / 1000}秒`)
+        toast.success(`加载完成，耗时${(endTime - startTime) / 1000}秒`)
       })
       navigate('/home')
     }).catch((e: Error) => {
@@ -28,7 +28,6 @@ export default () => {
         })
       }
       console.error(e)
-      // location.href = '/init?type=init&msg=未检测到配置文件，点击开始初始化'
     })
   })
   return (

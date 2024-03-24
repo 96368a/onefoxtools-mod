@@ -3,7 +3,7 @@ import DataStore from '~/store/data'
 
 export default function () {
   const { getEnv, envConfig, saveEnv, refreshEnv } = DataStore
-  const envs = createMemo<Array<Array<string>>>(() => {
+  const envs = createMemo(() => {
     if (envConfig && envConfig!.env)
       return Object.entries(envConfig!.env)
 
@@ -33,7 +33,6 @@ export default function () {
   }
   onMount(async () => {
     await getEnv()
-    console.log(envConfig)
   })
   return (
     <div class="h-full w-full bg-base-300 px-4 py-4 rounded-box">
@@ -46,7 +45,7 @@ export default function () {
             <input class="w-60 bg-base-200 py-2 input rounded-box" value={c[0]} />
             <div class="py-2">:</div>
             <select class="w-full bg-base-200 input select select-bordered rounded-box">
-              <For each={c[1].list!}>
+              <For each={c[1].list}>
               {v => <option value={v}>{v}</option>}
               </For>
             </select>

@@ -104,6 +104,10 @@ func InitEnv() error {
 
 // 加载java及python环境
 func LoadEnv(root string) {
+	// 初始化环境变量
+	if Paths.Env == nil {
+		Paths.Env = make(map[string]*EnvConfig)
+	}
 	exes := []string{"java.exe", "python.exe"}
 	resultChan := make(chan string)
 	maxDepth := 5
@@ -217,6 +221,7 @@ func getJavaVersion(path string) ([]string, error) {
 }
 
 func walkDir(dir string, fileName []string, maxDepth int, resultChan chan<- string) {
+	dir, _ = filepath.Abs(dir)
 	filepath.WalkDir(dir, func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return nil
