@@ -7,16 +7,20 @@ import { EventsOn } from 'wailsjs/runtime/runtime'
 import Footer from './components/Footer'
 import Dialog from './components/Dialog'
 import routes from '~solid-pages'
+import Cookie from "js-cookie";
 
 export default function App() {
   const Routes = useRoutes(routes)
   onMount(async () => {
-    EventsOn('toast.success', (msg: string) => {
-      toast.success(msg)
-    })
-    EventsOn('toast.error', (msg: string) => {
-      toast.error(msg)
-    })
+    if(!Cookie.get("toastEvent")){
+      EventsOn('toast.success', (msg: string) => {
+        toast.success(msg)
+      })
+      EventsOn('toast.error', (msg: string) => {
+        toast.error(msg)
+      })
+      Cookie.set("toastEvent", "true")
+    }
     themeChange()
   })
   return (

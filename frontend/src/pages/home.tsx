@@ -24,7 +24,9 @@ function Index() {
     toast.promise(
       (async function () {
         const startTime = new Date().getTime()
-        await refresConfig()
+        await refresConfig().catch((e: string) => {
+          console.error(e)
+        })
         const endTime = new Date().getTime()
         setTime((endTime - startTime) / 1000)
       }()),

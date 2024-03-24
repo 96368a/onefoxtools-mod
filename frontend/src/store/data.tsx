@@ -53,7 +53,7 @@ function createDataStore() {
   async function refresConfig() {
     await InitConfig().catch((e: string) => {
       console.error(e)
-      throw e
+      throw new Error(e)
     })
     await getData()
     // 设置窗口标题

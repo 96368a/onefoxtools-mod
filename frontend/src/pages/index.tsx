@@ -14,12 +14,12 @@ export default () => {
       GetStartTime().then((t) => {
         const startTime = new Date(t).getTime()
         const endTime = new Date().getTime()
-        toast.success(`加载完成，耗时${(endTime - startTime) / 1000}秒`)
+        toast.success(`index加载完成，耗时${(endTime - startTime) / 1000}秒`)
       })
       navigate('/home')
-    }).catch((e: string) => {
+    }).catch((e: Error) => {
       toast.error('加载配置文件出错')
-      if (e.search('cannot find the file') !== -1) {
+      if (e.message.search('cannot find the file') !== -1) {
         navigate('/init', {
           state: {
             type: 'init',
@@ -27,6 +27,7 @@ export default () => {
           },
         })
       }
+      console.error(e)
       // location.href = '/init?type=init&msg=未检测到配置文件，点击开始初始化'
     })
   })
