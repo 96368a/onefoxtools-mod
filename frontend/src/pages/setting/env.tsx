@@ -2,7 +2,7 @@ import toast from 'solid-toast'
 import DataStore from '~/store/data'
 
 export default function () {
-  const { getEnv, envConfig, saveEnv, refreshEnv } = DataStore
+  const { getEnv, envConfig, saveEnv, refreshEnv, updateEnv } = DataStore
   const envs = createMemo(() => {
     if (envConfig && envConfig!.env)
       return Object.entries(envConfig!.env)
@@ -44,9 +44,9 @@ export default function () {
           <div class="flex gap-4">
             <input class="w-60 bg-base-200 py-2 input rounded-box" value={c[0]} />
             <div class="py-2">:</div>
-            <select class="w-full bg-base-200 input select select-bordered rounded-box">
+            <select class="w-full bg-base-200 input select select-bordered rounded-box" onchange={e => updateEnv(c[0], Number.parseInt(e.currentTarget.value))}>
               <For each={c[1].list}>
-              {v => <option value={v}>{v}</option>}
+                {(v, i) => <option value={i()}>{v}</option>}
               </For>
             </select>
             {/* <input class="w-full bg-base-200 py-2 input rounded-box" value={c[1]} onchange={e => updateEnv(c[0], e.currentTarget.value)}/> */}
