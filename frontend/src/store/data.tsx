@@ -52,8 +52,8 @@ function createDataStore() {
   }
   async function refresConfig() {
     await InitConfig().catch((e: string) => {
-      if (e.search('cannot find the file') !== -1)
-        location.href = '/init?type=init&msg=未检测到配置文件，点击开始初始化'
+      console.error(e)
+      throw e
     })
     await getData()
     // 设置窗口标题
