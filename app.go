@@ -1,6 +1,7 @@
 package main
 
 import (
+	"changeme/common"
 	"context"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"golang.org/x/exp/slog"
@@ -24,6 +25,13 @@ func (a *App) startup(ctx context.Context) {
 	// Perform your setup here
 	a.ctx = ctx
 	wailsContext = &ctx
+	common.InitEnv()
+	if common.Paths.Title != "" {
+		runtime.WindowSetTitle(ctx, common.Paths.Title)
+		slog.Info("已从配置中读取标题")
+	} else {
+		slog.Error("未设置标题")
+	}
 }
 
 // domReady is called after front-end resources have been loaded

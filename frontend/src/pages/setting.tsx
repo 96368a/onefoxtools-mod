@@ -1,10 +1,5 @@
-import toast from 'solid-toast'
-
 export default function () {
   const navigate = useNavigate()
-  function not() {
-    toast.error('暂未完善...')
-  }
   return (
         <div class="w-full flex gap-2 p-2">
             <div class="h-full bg-base-300 pt-4 rounded-box">
@@ -12,7 +7,7 @@ export default function () {
                     设置
                 </div>
                 <ul class="menu">
-                    <li onclick={not} ondblclick={() => navigate('/setting/debug')}>
+                    <li onclick={() => navigate('/setting/base')} ondblclick={() => navigate('/setting/debug')}>
                         <a class="w-50 flex justify-start">
                             <div class='i-carbon-settings h-5 w-5'></div>
                             <span>基础设置</span>

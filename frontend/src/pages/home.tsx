@@ -61,7 +61,7 @@ function Index() {
         <div class="w-full bg-base-100 shadow-xl card">
           <div class="card-body">
             <div class='absolute right-2 top-2 flex gap-1'>
-              <button class='h-8 w-8 rounded-full btn-ghost' onclick={() => navigate('/setting/env')}>
+              <button class='h-8 w-8 rounded-full btn-ghost' onclick={() => navigate('/setting/base')}>
                 <div class='i-carbon-settings mx-auto w-6'></div>
               </button>
             </div>
@@ -92,22 +92,11 @@ function Index() {
                       <button class="btn btn-outline btn-sm" onclick={() => start(c)}>{c.name}</button>
                     )
                   }</For>
-                  {/* <button class="btn btn-primary">Buy Now</button> */}
                 </div>
               </div>
             </div>
           </div>
         </div>
-        // <div class='shadow rounded mb-1 py-2 mx-4'>
-        //   <h2 class='w-full text-center'>{type.type}</h2>
-        //   <div class='flex gap-2 justify-start p-2 flex-wrap'>
-        //     <For each={type.config}>{
-        //       c => (
-        //         <button class="btn text-xs truncate" onclick={() => start(c)}>{c.name}</button>
-        //       )
-        //     }</For>
-        //   </div>
-        // </div>
       )
       }
       </For>

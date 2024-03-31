@@ -42,7 +42,7 @@ export default function () {
       <div class="flex flex-col gap-2 px-2">
         <For each={envs()}>{c => (
           <div class="flex gap-4">
-            <input class="w-60 bg-base-200 py-2 input rounded-box" value={c[0]} />
+            <input class="w-60 bg-base-200 py-2 input rounded-box" readonly value={c[0]} />
             <div class="py-2">:</div>
             <select class="w-full bg-base-200 input select select-bordered rounded-box" onchange={e => updateEnv(c[0], Number.parseInt(e.currentTarget.value))}>
               <For each={c[1].list}>
