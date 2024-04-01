@@ -153,8 +153,8 @@ func LoadEnv(root string) {
 	// 配置python环境变量
 	for _, p := range pythons {
 		if strings.HasPrefix(p[0], "3.") {
-			Paths.Env["python3"].AppendEnv(p[1])
-			Paths.Env["python"].AppendEnv(p[1])
+			Paths.AppendEnv("python3", p[1])
+			Paths.AppendEnv("python", p[1])
 			break
 		}
 	}
