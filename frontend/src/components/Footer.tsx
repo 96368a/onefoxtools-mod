@@ -1,4 +1,4 @@
-import { WindowSetDarkTheme, WindowSetLightTheme } from '../../wailsjs/runtime/runtime'
+import { BrowserOpenURL, WindowSetDarkTheme, WindowSetLightTheme } from '../../wailsjs/runtime/runtime'
 
 export default function Footer() {
   const [isDark, setIsDark] = createSignal(false)
@@ -16,7 +16,7 @@ export default function Footer() {
     }
   }
   return (
-    <nav class="m-y-6 inline-flex justify-center gap-2 text-xl">
+    <nav class="inline-flex justify-center gap-2 py-6 text-xl">
       <button
         class="icon-btn i-carbon-home"
         title="主页"
@@ -25,13 +25,10 @@ export default function Footer() {
       <button class="icon-btn !outline-none" onClick={toggle}>
         {isDark() ? <div class="i-carbon-moon" /> : <div class="i-carbon-sun" />}
       </button>
-      <a
+      <button
         class="icon-btn i-carbon-logo-github"
-        rel="noreferrer"
-        href="https://github.com/96368a"
-        target="_blank"
-        title="GitHub"
-      />
+        onclick={() => BrowserOpenURL('https://github.com/96368a/OnefoxTools-Mod')}
+      ></button>
 
     </nav>
 
