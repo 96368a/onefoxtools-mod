@@ -4,6 +4,7 @@ import (
 	"changeme/common"
 	"context"
 	"github.com/labstack/gommon/log"
+	"github.com/wailsapp/wails/v2/pkg/runtime"
 	"gopkg.in/yaml.v3"
 	"os"
 	"time"
@@ -77,7 +78,15 @@ func (c GOContext) InitConfig() error {
 	return common.InitConfig()
 }
 func (c GOContext) GenerateConfig() error {
-	return common.GenerateConfig()
+	err := common.GenerateConfig()
+	if err != nil {
+		return err
+	}
+	// 根据配置文件更改应用标题
+	if common.Paths.Title != "" {
+		runtime.WindowSetTitle(*wailsContext, common.Paths.Title)
+	}
+	return nil
 }
 func (c GOContext) Exit() {
 	os.Exit(0)

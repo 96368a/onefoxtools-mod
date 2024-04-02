@@ -1,4 +1,3 @@
-// import { Greet } from 'wailsjs/go/main/App'
 import type { common } from 'wailsjs/go/models'
 
 import toast from 'solid-toast'
@@ -79,7 +78,6 @@ function Index() {
         </div>
       </div>
 
-      {/* <button class="btn" onclick={t}>233</button> */}
       <For each={configs}>{type => (
         <div class="px-3">
           <div class="my-2 w-full bg-base-100 shadow-xl card">

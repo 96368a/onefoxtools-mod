@@ -107,6 +107,7 @@ func InitLog() {
 
 func GenerateConfig() error {
 	//CdExePath()
+	titleS := `title=u"(ONE.+by.+?)_.+",`
 	typeS := `.*wx.StaticBox\(self, wx.ID_ANY, u\"-*([^"]+)-*\"`
 	nameS := `self\.(.+?) = wx.Button\(gui.+?u\"(.+?)\"`
 	namefile := "GUI_Tools_wxpython_gui.py"
@@ -116,6 +117,13 @@ func GenerateConfig() error {
 		return err
 	}
 	bindContent := string(content)
+	titleGroup := regexp.MustCompile(titleS).FindStringSubmatch(bindContent)
+	if len(titleGroup) < 2 {
+		slog.Error("标题匹配失败：%s\n", bindContent)
+		Paths.Title = "ONE-FOX集成工具箱"
+	} else {
+		Paths.Title = titleGroup[1]
+	}
 	// 匹配工具类型
 	reType := regexp.MustCompile(typeS)
 	// 匹配类型下有哪些工具
