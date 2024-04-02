@@ -1,45 +1,105 @@
-<p align="center">Wails 的模版，开箱即用的 Vite, Solid, TypeScript 并支持热重载</p>
+<h1  align="center">ONE-FOX集成工具箱-UI美化工具</h1>
 
-<p align="center">前端模板来自<a href="https://github.com/96368a/vitesse-lite-solidjs">vitesse-lite-solidjs</a></p>
+<p align="center">
+  <a href="https://github.com/wailsapp/wails/blob/master/LICENSE">
+    <img alt="GitHub" src="https://img.shields.io/badge/Language-Golang-blue"/>
+    <img alt="GitHub" src="https://img.shields.io/badge/Author-木末君-orange"/>
+    <img alt="GitHub" src="https://img.shields.io/github/license/96368a/OnefoxTools-Mod"/>
+  </a>
+</p>
 
-## 使用模版
+## 导航
 
-```bash
-wails init -n my-wails-solid -t https://github.com/96368a/wails-solid-vitesse-template
-```
+- [项目说明](#项目说明)
+- [使用教程](#使用教程)
+- [应用预览](#应用预览)
+  - [首页](#首页)
+  - [设置](#设置)
+  - [搜索](#搜索)
+- [编译说明](#编译说明)
+- [License](#License)
 
-**如果你想使用GoLand调试项目**
 
-```bash
-wails init -n my-wails-solid -t https://github.com/96368a/wails-solid-vitesse-template -ide goland
-```
+## 项目说明
 
-## 启动调试
+本项目在[ONE-FOX集成工具箱](https://github.com/One-Fox-Security-Team/One-Fox-T00ls)（下称狐狸工具箱）的基础上重新构建了一个UI，相比原版UI更加美观，增加了搜索功能。
 
-在工程目录中执行 `wails dev` 即可启动。
+理论上兼容狐狸工具箱v2-v7版。
 
-如果你想在浏览器中调试，请在另一个终端进入 `frontend` 目录，然后执行 `pnpm dev` ，前端开发服务器将在 http://localhost:3333 上运行。
+本人非狐狸安全团队成员，之前在群里问过狐狸师傅一嘴说能二开，如有侵权，请联系ncxxg@outlook.com
 
-**项目前端默认使用pnpm作为包管理器，如需修改请编辑`wails.json`**
+## 使用教程
 
-```json
+本项目不提供[ONE-FOX集成工具箱](https://github.com/One-Fox-Security-Team/One-Fox-T00ls)本体，请自己从公众号或者别处获取狐狸工具箱本体，也可以用自己正在使用的狐狸工具箱，本项目不会对正在使用的狐狸工具箱进行任何更改。
+
+下载[releases](https://github.com/96368a/OnefoxTools-Mod/releases)中编译好的exe（不放心的可以自己编译），放入ONE-FOX集成工具箱的根目录，点击运行即可，初次运行请点击初始化配置文件。
+
+![](img/init.jpg)
+
+## 应用预览
+
+### 首页
+
+![](img/index.jpg)
+
+### 设置
+
+![](img/setting.jpg)
+
+### 搜索
+
+![](img/search.jpg)
+
+## 编译说明
+
+本项目依赖于golang1.20+，[wails v2.0+](https://wails.io/)，[pnpm](https://pnpm.io)，请确保你已经拥有以上环境。
+
+其中pnpm可使用npm、yarn代替，若要更换pnpm，请同步修改wails.json。
+
+```shell
 {
-  "$schema": "https://wails.io/schemas/config.v2.json",
-  "name": "solid-vitesse",
-  "outputfilename": "solid-vitesse",
-  "frontend:install": "pnpm install", 	//更改为npm或者yarn
-  "frontend:build": "pnpm build",		//这行也要同步更改
-  "frontend:dev:watcher": "pnpm dev",	//这行也要同步更改
-  "frontend:dev:serverUrl": "auto",
-  "author": {
-    "name": "xxxxxx",
-    "email": "xxxxxx@gmail.com"
-  }
+  ...
+  "frontend:install": "pnpm install", // 可修改为npm install
+  "frontend:build": "pnpm build",     // npm run build
+  "frontend:dev:watcher": "pnpm dev", // npm run dev
+  ...
 }
+
 ```
 
+以下为正常编译流程
 
+1. 克隆项目到本地
 
-## 构建
+```shell
+git clone https://github.com/96368a/OnefoxTools-Mod
+```
 
-给你的项目打包，请执行命令： `wails build` 。
+2. 安装go依赖
+
+```shell
+cd OnefoxTools-Mod
+go mod tidy
+```
+
+3. 安装前端依赖
+
+```shell
+cd fronted
+pnpm install
+```
+
+4. 编译
+
+```shell
+cd ..
+wails build
+```
+
+额外说明: 本项目releases中的exe已采用upx压缩，自己编译时可以示情况自行选用。
+
+## License
+
+BSD 3-Clause License
+
+Copyright (c) 2023, 木末君
