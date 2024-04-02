@@ -14,6 +14,12 @@ type GOContext struct {
 	ctx context.Context
 }
 
+var (
+	Version   string
+	BuildTime string
+	Commit    string
+)
+
 func (c GOContext) Start(config common.Config) error {
 	cmd := &common.Exec{}
 	log.Info("执行命令:", config)
@@ -90,4 +96,16 @@ func (c GOContext) GenerateConfig() error {
 }
 func (c GOContext) Exit() {
 	os.Exit(0)
+}
+
+func (c GOContext) GetVersion() string {
+	return Version
+}
+
+func (c GOContext) GetBuildTime() string {
+	return BuildTime
+}
+
+func (c GOContext) GetGitCommit() string {
+	return Commit
 }
