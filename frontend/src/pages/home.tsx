@@ -69,7 +69,7 @@ function Index() {
               <h1>{envConfig.title ? envConfig.title : '安全工具箱'}</h1>
             </div>
             <div class="flex justify-center gap-2">
-              <input type="search" id="search" class='max-w-xs w-full input input-bordered input-sm' onfocus={() => setShowSearch(true)} />
+              <input type="search" id="search" class='max-w-xs w-full input input-bordered input-sm' onfocus={() => setShowSearch(true)} placeholder="请输入搜索关键字" />
               <div class='flex gap-2'>
                 <button class='px-10 btn btn-success btn-sm' onclick={() => setShowSearch(true)}>搜索</button>
                 <button class='px-10 btn btn-warning btn-sm' onclick={refresh}>刷新</button>
