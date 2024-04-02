@@ -14,4 +14,4 @@ export GOOS=windows
 export GOARCH=amd64
 
 # 构建项目
-wails build -ldflags "-X main.Version=$version -X main.BuildTime=$currentTime -X main.Commit=$commitHash -w -s" --upx
+wails build -ldflags "-X main.Version=$version -X main.BuildTime=$currentTime -X main.Commit=$commitHash -w -s" -platform windows --upx
