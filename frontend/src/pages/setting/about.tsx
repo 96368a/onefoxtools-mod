@@ -1,4 +1,5 @@
 import { GetBuildTime, GetGitCommit, GetVersion } from 'wailsjs/go/main/GOContext'
+import { BrowserOpenURL } from 'wailsjs/runtime/runtime'
 
 export default function () {
   const [version, setVersion] = createSignal('')
@@ -18,7 +19,7 @@ export default function () {
             <div>
                 <div class="py-2">OnefoxTools-Mod</div>
                 <div class="py-2">作者:木末君</div>
-                <div class="py-2">Github: <a href="https://github.com/96368a/OnefoxTools-Mod">https://github.com/96368a/OnefoxTools-Mod</a></div>
+                <div class="py-2">Github: <button onclick={() => BrowserOpenURL('https://github.com/96368a/OnefoxTools-Mod')}>https://github.com/96368a/OnefoxTools-Mod</button></div>
                 <div>当前版本: {version() || '未知版本'}</div>
                 <div>编译时间: {buildTime() || '未知时间'}</div>
                 <div>最后Commit版本: {commit() || '未知提交'}</div>

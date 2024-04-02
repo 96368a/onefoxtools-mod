@@ -22,14 +22,17 @@ export default function Footer() {
         title="主页"
         onclick={() => navigate('/')}
       ></button>
-      <button class="icon-btn !outline-none" onClick={toggle}>
+      <button
+        title='切换主题'
+        class="icon-btn !outline-none"
+        onClick={toggle}>
         {isDark() ? <div class="i-carbon-moon" /> : <div class="i-carbon-sun" />}
       </button>
       <button
         class="icon-btn i-carbon-logo-github"
+        title="项目地址"
         onclick={() => BrowserOpenURL('https://github.com/96368a/OnefoxTools-Mod')}
       ></button>
-
     </nav>
 
   )

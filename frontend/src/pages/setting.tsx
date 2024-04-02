@@ -20,19 +20,19 @@ export default function () {
                     </li>
                     <li onclick={() => navigate('/setting/env')} ondblclick={() => navigate('/setting/test')}>
                         <a class="flex justify-start">
-                            <div class='i-carbon-settings h-5 w-5'></div>
+                            <div class='i-carbon-tool-box h-5 w-5'></div>
                             <div>环境变量配置</div>
                         </a>
                     </li>
                     <li onclick={not} ondblclick={() => navigate('/setting/tools')}>
                         <a class="flex justify-start">
-                            <div class='i-carbon-settings h-5 w-5'></div>
+                            <div class='i-carbon-tool-kit h-5 w-5'></div>
                             <span>工具设置</span>
                         </a>
                     </li>
                     <li onclick={() => navigate('/setting/about')}>
                         <a class="flex justify-start">
-                            <div class='i-carbon-settings h-5 w-5'></div>
+                            <div class='i-carbon-information h-5 w-5'></div>
                             <span>关于</span>
                         </a>
                     </li>
