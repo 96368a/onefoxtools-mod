@@ -21,6 +21,4 @@
 go.work
 
 build/
-*.yml
-*.yaml
 *.log
