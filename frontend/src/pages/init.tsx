@@ -17,11 +17,19 @@ export default function Init() {
       (GenerateConfig().then(() => {
         navigate('/')
         setIsGenerating(false)
+      }).catch((err) => {
+        setIsGenerating(false)
+        console.error(err)
+        const errorFileName = /open (.+\.py):/g.exec(err)
+        if (errorFileName && errorFileName.length > 1)
+          throw new Error(`\n没有找到 ${errorFileName[1]}\n请将本程序置于狐狸工具箱根目录`)
+        else
+          throw new Error(err)
       })),
       {
         loading: '正在生成配置文件...',
         success: '生成配置文件成功',
-        error: '生成配置文件出错',
+        error: err => `生成配置文件出错${err.message}`,
       },
     )
   }
