@@ -1,5 +1,13 @@
 # Changelog
 
+<a name="next"></a>
+## next
+
+### Miscellaneous
+
+- ⚗️ 自动生成changlog [[7e2ea02](https://github.com/96368a/OnefoxTools/commit/7e2ea027ab28f68d0015552cbca315c580dd753c)]
+
+
 <a name="0.9.0"></a>
 ## 0.9.0 (2024-04-07)
 
