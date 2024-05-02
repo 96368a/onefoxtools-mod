@@ -1,7 +1,8 @@
 import type { common } from 'wailsjs/go/models'
 
 import toast from 'solid-toast'
-import { Start } from '../../wailsjs/go/main/GOContext'
+import Cookies from 'js-cookie'
+import { GetStartTime, Start } from '../../wailsjs/go/main/GOContext'
 import Search from '~/components/SearchUI'
 import DataStore from '~/store/data'
 
@@ -36,6 +37,16 @@ function Index() {
       },
     )
   }
+  onMount(() => {
+    if (Cookies.get('init') !== 'true') {
+      GetStartTime().then((t) => {
+        const startTime = new Date(t).getTime()
+        const endTime = new Date().getTime()
+        toast.success(`加载完成，耗时${(endTime - startTime) / 1000}秒`)
+      })
+      Cookies.set('init', 'true')
+    }
+  })
 
   function start(c: common.Config) {
     toast.promise(

@@ -14,7 +14,6 @@ function createDataStore() {
     setEnvConfig(name, value)
   }
   async function updateEnv(key: string, index: number) {
-    // envConfig.env[key].current = index
     setEnvConfig('env', (env) => {
       env[key].current = index
       return env
@@ -27,6 +26,8 @@ function createDataStore() {
   }
   async function getData() {
     GetConfigs().then((result) => {
+      if (!result || !result.length)
+        return
       // 工具类别按照index进行排序
       result.sort((a, b) => {
         if (a.index === 0)
@@ -55,16 +56,12 @@ function createDataStore() {
       throw new Error(e)
     })
     await getData()
+    await getEnv()
     // 设置窗口标题
     if (envConfig.title)
       WindowSetTitle(envConfig.title)
   }
-  async function refreshEnv() {
-    GetENVConfigs().then((res) => {
-      setEnvConfig(res)
-    })
-  }
-  return { configs, getData, refresConfig, refreshEnv, getEnv, envConfig, saveEnv, updateEnv, updateEnvConfig }
+  return { configs, envConfig, refresConfig, saveEnv, updateEnv, updateEnvConfig }
 }
 
 export default createRoot(createDataStore)
