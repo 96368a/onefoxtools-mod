@@ -25,6 +25,8 @@ export function InitConfig():Promise<void>;
 
 export function InitEnv():Promise<void>;
 
+export function OpenFolderInExplorer(arg1:string):Promise<void>;
+
 export function SaveENVConfigs(arg1:common.YamlInfo):Promise<void>;
 
 export function Start(arg1:common.Config):Promise<void>;

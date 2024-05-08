@@ -3,10 +3,14 @@ package main
 import (
 	"changeme/common"
 	"context"
+	"errors"
 	"github.com/labstack/gommon/log"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
+	"golang.org/x/exp/slog"
 	"gopkg.in/yaml.v3"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"time"
 )
 
@@ -94,6 +98,25 @@ func (c GOContext) GenerateConfig() error {
 	}
 	return nil
 }
+
+func (c GOContext) OpenFolderInExplorer(path string) error {
+	folderPath, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+	// 检查文件夹路径是否存在
+	if _, err := os.Stat(folderPath); os.IsNotExist(err) {
+		slog.Error("文件夹路径不存在")
+		return errors.New("路径不存在: " + path)
+	}
+
+	// 在资源管理器中打开文件夹
+	cmd := exec.Command("explorer", folderPath)
+	cmd.Run()
+
+	return nil
+}
+
 func (c GOContext) Exit() {
 	os.Exit(0)
 }

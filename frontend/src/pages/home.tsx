@@ -2,7 +2,7 @@ import type { common } from 'wailsjs/go/models'
 
 import toast from 'solid-toast'
 import Cookies from 'js-cookie'
-import { GetStartTime, Start } from '../../wailsjs/go/main/GOContext'
+import { GetStartTime, OpenFolderInExplorer, Start } from '../../wailsjs/go/main/GOContext'
 import Search from '~/components/SearchUI'
 import DataStore from '~/store/data'
 
@@ -64,9 +64,55 @@ function Index() {
     )
   }
 
+  const [selectedEnv, setSelectedEnv] = createSignal({} as common.Config)
+  let contentMenuRef = document.createElement('ul') // eslint-disable-line prefer-const
+  const [isShowContentMenu, setShowContentMenu] = createSignal(false)
+  createEffect(() => {
+    if (isShowContentMenu())
+      contentMenuRef.classList.add('z-999')
+    else
+      contentMenuRef.classList.remove('z-999')
+  })
+  const contentMentHandler = (e: MouseEvent, c: common.Config) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const client = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    contentMenuRef.style.top = `${client.y}px`
+    contentMenuRef.style.left = `${client.x}px`
+    setSelectedEnv(c)
+    setShowContentMenu(true)
+  }
+  const hiddenContentMenu = () => {
+    setShowContentMenu(false)
+  }
+  const openFolder = () => {
+    // 使用正则表达式匹配绝对路径
+    const regex = /cd (.+?) &&/i
+    const match = selectedEnv().command.match(regex)
+    if (match) {
+      OpenFolderInExplorer(match[1]).then(() => {
+        toast.success('打开文件夹成功')
+        hiddenContentMenu()
+      }).catch((e) => {
+        toast.error(e)
+      })
+    }
+    else {
+      toast.error('未找到文件夹路径')
+    }
+  }
+
   return (
-    <div class=''>
+    <div onclick={hiddenContentMenu} oncontextmenu={hiddenContentMenu}>
       <Search configs={configs} show={showSearch} setShow={setShowSearch} />
+      <div class="relative">
+        <ul class="absolute right-0 top-12 z--1 w-56 bg-base-200 menu rounded-box"
+          ref={contentMenuRef}>
+          <li><a>查看信息</a></li>
+          <li onclick={openFolder}><span>在文件夹中打开</span></li>
+        </ul>
+      </div>
+
       <div class="px-2 pt-2">
         <div class="w-full bg-base-100 shadow-xl card">
           <div class="card-body">
@@ -98,7 +144,9 @@ function Index() {
                 <div class="card-actions">
                   <For each={type.config}>{
                     c => (
-                      <button class="btn btn-outline btn-sm" onclick={() => start(c)}>{c.name}</button>
+                      <button class="btn btn-outline btn-sm"
+                        oncontextmenu={e => contentMentHandler(e, c)}
+                        onclick={() => start(c)}>{c.name}</button>
                     )
                   }</For>
                 </div>

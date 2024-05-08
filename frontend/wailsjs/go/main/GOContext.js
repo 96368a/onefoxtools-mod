@@ -46,6 +46,10 @@ export function InitEnv() {
   return window['go']['main']['GOContext']['InitEnv']();
 }
 
+export function OpenFolderInExplorer(arg1) {
+  return window['go']['main']['GOContext']['OpenFolderInExplorer'](arg1);
+}
+
 export function SaveENVConfigs(arg1) {
   return window['go']['main']['GOContext']['SaveENVConfigs'](arg1);
 }
