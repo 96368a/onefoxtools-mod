@@ -1,10 +1,20 @@
 # Changelog
 
-<a name="next"></a>
-## next
+<a name="0.9.1"></a>
+## 0.9.1 (2024-07-25)
+
+### Added
+
+- ✨ 添加了打开程序所在文件夹功能 [[79f24bb](https://github.com/96368a/OnefoxTools/commit/79f24bb832c37c35375c01a8a3ffb8f1e92f7474)]
+
+### Fixed
+
+- 🐛 修改右键菜单显示不正确的bug [[2128c33](https://github.com/96368a/OnefoxTools/commit/2128c33b3a0bf780f7def03b618c2772c45a2187)]
+- 🐛 修复了程序多开配置加载不正确的问题 [[2c711d3](https://github.com/96368a/OnefoxTools/commit/2c711d331caafccdafb65fa88fc6e4ec7be883c6)]
 
 ### Miscellaneous
 
+- 📝 测试支持v8版本 [[1d3a903](https://github.com/96368a/OnefoxTools/commit/1d3a903c5b7b9995de57089c311cabba6f42e2a2)]
 - ⚗️ 自动生成changlog [[7e2ea02](https://github.com/96368a/OnefoxTools/commit/7e2ea027ab28f68d0015552cbca315c580dd753c)]
 
 
