@@ -24,7 +24,7 @@
 
 本项目在[ONE-FOX集成工具箱](https://github.com/One-Fox-Security-Team/One-Fox-T00ls)（下称狐狸工具箱）的基础上重新构建了一个UI，相比原版UI更加美观，增加了搜索功能。
 
-理论上兼容狐狸工具箱v2-v7版。
+理论上兼容狐狸工具箱v2-v8版。
 
 本人非狐狸安全团队成员，之前在群里问过狐狸师傅一嘴说能二开，如有侵权，请联系ncxxg@outlook.com
 
