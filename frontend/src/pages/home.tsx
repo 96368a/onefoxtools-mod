@@ -73,15 +73,36 @@ function Index() {
     else
       contentMenuRef.classList.remove('z-999')
   })
+  // 计算元素到顶部的距离
+  const CalcCoord = (element: EventTarget | null): number | null => {
+    if (!(element instanceof HTMLElement))
+      return null
+
+    let actualTop = element.offsetTop
+    let current = element.offsetParent as HTMLElement | null
+
+    while (current !== null) {
+      actualTop += current.offsetTop + current.clientTop
+      current = current.offsetParent as HTMLElement | null
+    }
+
+    return actualTop + element.clientHeight - 2
+  }
+
   const contentMentHandler = (e: MouseEvent, c: common.Config) => {
     e.preventDefault()
     e.stopPropagation()
-    const client = (e.currentTarget as HTMLElement).getBoundingClientRect()
-    contentMenuRef.style.top = `${client.y}px`
-    contentMenuRef.style.left = `${client.x}px`
+
+    const target = e.currentTarget as HTMLElement
+    const clientRect = target.getBoundingClientRect()
+    // 设置菜单位置
+    contentMenuRef.style.top = `${CalcCoord(target)}px`
+    contentMenuRef.style.left = `${clientRect.x}px`
+
     setSelectedEnv(c)
     setShowContentMenu(true)
   }
+
   const hiddenContentMenu = () => {
     setShowContentMenu(false)
   }
