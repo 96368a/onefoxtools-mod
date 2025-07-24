@@ -1,6 +1,7 @@
 package common
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"golang.org/x/exp/slog"
@@ -105,7 +106,24 @@ func InitLog() {
 	})))
 }
 
+var OnefoxFile = "GUI_Tools_wxpython_gui.py"
+var TianfoxFile = "config/tools.json"
+
 func GenerateConfig() error {
+
+	// 只要文件能正常读出来，就说明它存在且是普通文件
+	if _, err := os.ReadFile(OnefoxFile); err == nil {
+		return GenerateConfigByOneFox()
+	}
+	if _, err := os.ReadFile(TianfoxFile); err == nil {
+		return GenerateConfigByTianFox()
+	}
+
+	slog.Error("未找到配置文件")
+	return errors.New("未找到配置文件")
+}
+
+func GenerateConfigByOneFox() error {
 	//CdExePath()
 	titleS := `title=u"(ONE.+by.+?)_.+",`
 	typeS := `.*wx.StaticBox\(self, wx.ID_ANY, u\"-*([^"]+)-*\"`
@@ -218,6 +236,75 @@ func GenerateConfig() error {
 		return err
 	}
 	for _, data := range datas {
+		filename := fmt.Sprintf("config/tools/%s.yml", data.Type)
+		file, err := os.Create(filename)
+		if err != nil {
+			slog.Error("创建文件失败：%s\n", err)
+			return err
+		}
+		dataBytes, err := yaml.Marshal(data)
+		if err != nil {
+			slog.Error("转换为YAML失败：%s\n\n", err)
+			continue
+		}
+
+		if _, err = file.Write(dataBytes); err != nil {
+			slog.Error("写入文件失败：%s\n\n", err)
+			continue
+		}
+		slog.Info("写入文件成功：%s\n", filename)
+		file.Close()
+	}
+	LoadEnv(Paths.Dir)
+	return nil
+}
+
+type TianHuTool struct {
+	Name        string `json:"name"`
+	Category    string `json:"category"`
+	Type        string `json:"type"`
+	Description string `json:"description"`
+	Weight      int    `json:"weight"`
+	Path        string `json:"path"`
+	Params      string `json:"params"`
+	URL         string `json:"url"`
+}
+
+func GenerateConfigByTianFox() error {
+	data, err := os.ReadFile(TianfoxFile)
+	if err != nil {
+		slog.Error("读取文件失败：%s\n", err)
+		return err
+	}
+
+	var tools []TianHuTool
+	if err := json.Unmarshal(data, &tools); err != nil {
+		slog.Error("解析配置文件失败：%s\n", err)
+		return err
+	}
+	datas := make(map[string][]Config)
+	for i, t := range tools {
+		realPath := filepath.ToSlash(strings.TrimPrefix(t.Path, "/"))
+		datas[t.Category] = append(datas[t.Category], Config{
+			Name:    t.Name,
+			Command: realPath,
+			Index:   i,
+			Env:     t.Type,
+		})
+	}
+	typeConfigs := make([]TypeConfig, 0)
+	for k, v := range datas {
+		typeConfigs = append(typeConfigs, TypeConfig{
+			Type:   k,
+			Config: v,
+			Index:  len(typeConfigs) + 1,
+		})
+	}
+	if err := os.MkdirAll("config/tools", 0777); err != nil {
+		slog.Error("创建目录失败:", err)
+		return err
+	}
+	for _, data := range typeConfigs {
 		filename := fmt.Sprintf("config/tools/%s.yml", data.Type)
 		file, err := os.Create(filename)
 		if err != nil {
