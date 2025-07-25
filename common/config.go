@@ -18,6 +18,7 @@ type Config struct {
 	Command string `json:"command" yaml:"command"`
 	Env     string `json:"env" yaml:"env,omitempty"`
 	Dir     string `json:"dir" yaml:"dir,omitempty"`
+	IsCli   bool   `json:"isCli" yaml:"isCli,omitempty"`
 }
 
 type TypeConfig struct {
@@ -285,12 +286,40 @@ func GenerateConfigByTianFox() error {
 	datas := make(map[string][]Config)
 	for i, t := range tools {
 		realPath := filepath.ToSlash(strings.TrimPrefix(t.Path, "/"))
+
+		command := filepath.Base(realPath)
+		env := ""
+		isCli := false
+
+		t.Type = strings.ToLower(t.Type)
+		if strings.HasPrefix(t.Type, "java") {
+			// 找到java版本号结束的位置
+			i := 4
+			for i < len(t.Type) && t.Type[i] >= '0' && t.Type[i] <= '9' {
+				i++
+			}
+			// 截取java版本号
+			if i > 4 {
+				env = t.Type[:i]
+				command = "java -jar " + command
+			}
+		} else if strings.HasPrefix(t.Type, "python") {
+			command = "python " + command
+			env = "python"
+			isCli = true
+		} else if t.Type == "命令行" {
+			isCli = true
+		}
+		if t.Params != "" {
+			command += " " + t.Params
+		}
 		datas[t.Category] = append(datas[t.Category], Config{
 			Name:    t.Name,
-			Command: filepath.Base(realPath),
+			Command: command,
 			Index:   i,
-			Env:     t.Type,
+			Env:     env,
 			Dir:     filepath.Dir(realPath),
+			IsCli:   isCli,
 		})
 	}
 	typeConfigs := make([]TypeConfig, 0)

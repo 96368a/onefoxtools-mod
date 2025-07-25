@@ -27,7 +27,7 @@ var (
 func (c GOContext) Start(config common.Config) error {
 	cmd := &common.Exec{}
 	log.Info("执行命令:", config)
-	err := cmd.CmdExec(config.Env, config.Command, config.Dir)
+	err := cmd.CmdExec(config.Env, config.Command, config.Dir, config.IsCli)
 	if err != nil {
 		return err
 	}

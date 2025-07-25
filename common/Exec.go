@@ -3,9 +3,6 @@ package common
 import (
 	"context"
 	"fmt"
-	"github.com/mitchellh/go-ps"
-	"golang.org/x/exp/slog"
-	"golang.org/x/text/encoding/simplifiedchinese"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -14,6 +11,10 @@ import (
 	"syscall"
 	"time"
 	"unsafe"
+
+	"github.com/mitchellh/go-ps"
+	"golang.org/x/exp/slog"
+	"golang.org/x/text/encoding/simplifiedchinese"
 )
 
 type Exec struct {
@@ -48,7 +49,7 @@ func (e *Exec) PowerShellExec(command string) error {
 	return nil
 }
 
-func (e *Exec) CmdExec(env string, command string, workDir string) error {
+func (e *Exec) CmdExec(env string, command string, workDir string, isCli bool) error {
 	// 改变当前工作目录
 	_ = os.Chdir(workDir)
 
@@ -56,8 +57,12 @@ func (e *Exec) CmdExec(env string, command string, workDir string) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithTimeout(ctx, 1*time.Second) // 设置超时时间
 	defer cancel()
-
-	cmd := exec.Command("cmd", "/c", command)
+	var cmd *exec.Cmd
+	if isCli {
+		cmd = exec.Command("cmd", "/c", "start cmd /k "+command)
+	} else {
+		cmd = exec.Command("cmd", "/c", command)
+	}
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		HideWindow:       true,
 		NoInheritHandles: true,
