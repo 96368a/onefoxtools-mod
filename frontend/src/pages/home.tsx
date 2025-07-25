@@ -108,6 +108,14 @@ function Index() {
   }
   const openFolder = () => {
     // 使用正则表达式匹配绝对路径
+    if (selectedEnv().dir !== '') {
+      OpenFolderInExplorer(selectedEnv().dir).then(() => {
+        toast.success('打开文件夹成功')
+        hiddenContentMenu()
+      }).catch((e) => {
+        toast.error(e)
+      })
+    }else{
     const regex = /cd (.+?) &&/i
     const match = selectedEnv().command.match(regex)
     if (match) {
@@ -122,6 +130,7 @@ function Index() {
       toast.error('未找到文件夹路径')
     }
   }
+}
 
   return (
     <div onclick={hiddenContentMenu} oncontextmenu={hiddenContentMenu}>

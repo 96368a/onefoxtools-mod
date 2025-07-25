@@ -287,9 +287,10 @@ func GenerateConfigByTianFox() error {
 		realPath := filepath.ToSlash(strings.TrimPrefix(t.Path, "/"))
 		datas[t.Category] = append(datas[t.Category], Config{
 			Name:    t.Name,
-			Command: realPath,
+			Command: filepath.Base(realPath),
 			Index:   i,
 			Env:     t.Type,
+			Dir:     filepath.Dir(realPath),
 		})
 	}
 	typeConfigs := make([]TypeConfig, 0)

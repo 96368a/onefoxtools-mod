@@ -70,6 +70,8 @@ func (e *Exec) CmdExec(env string, command string, workDir string) error {
 		}
 	}
 	err := cmd.Start()
+	// 改变当前工作目录
+	CdExePath()
 	if err != nil {
 		slog.Error("命令启动失败:", err)
 		return err
