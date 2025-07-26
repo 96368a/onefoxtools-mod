@@ -3,7 +3,15 @@ import PinyinMatch from 'pinyin-match'
 import { Start } from 'wailsjs/go/main/GOContext'
 import toast from 'solid-toast'
 
-export default function Search({ configs, show, setShow }: { configs: common.TypeConfig[]; show: () => boolean; setShow: (b: boolean) => void }) {
+interface SearchProps {
+  configs: common.TypeConfig[]
+  show: () => boolean
+  setShow: (b: boolean) => void
+  showContextMenu: (e: MouseEvent, c: common.Config) => void
+  hiddenContentMenu: () => void
+}
+
+export default function Search({ configs, show, setShow, showContextMenu, hiddenContentMenu }: SearchProps) {
   const [searchString, setSearchString] = createSignal('')
   const [searchResults, setSearchResults] = createSignal<common.Config[]>([])
 
@@ -17,6 +25,7 @@ export default function Search({ configs, show, setShow }: { configs: common.Typ
     }
     else {
       (document.querySelector('#root') as HTMLDivElement).onwheel = null
+      hiddenContentMenu()
     }
   })
 
@@ -53,27 +62,28 @@ export default function Search({ configs, show, setShow }: { configs: common.Typ
         <button class="absolute right-4 top-4 z-1001 btn btn-square btn-sm" onclick={() => setShow(false)}>
           ❌
         </button>
-        <div class='fixed z-1000 w-screen pt-20' onclick={() => setShow(false)}>
+        <div class='fixed z-200 w-screen pt-20' onclick={() => setShow(false)}>
           <input type="search" class="max-w-lg w-full input input-bordered" placeholder="请输入搜索关键字，支持拼音缩写"
             maxlength="-1"
             value={searchString()} onKeyUp={e => setSearchString(e.currentTarget.value) && rs()} onclick={e => e.stopPropagation()} />
-          {/* <input type="search" class="w-200 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:border-transparent" /> */}
 
-          <div py-4>
-            <ul class='flex flex-col gap-2'>
+          <div class='p-4'>
+            <div class='justify-center card-actions'>
               <For each={searchResults()}>
                 {
                   c => (
-                    <li class='mx-auto w-80 cursor-pointer rounded py-1' onclick={(e) => {
-                      start(c)
-                      e.stopPropagation()
-                    }}>
-                      <button class="border btn btn-sm">{c.name}</button>
-                    </li>
+                    <button class='btn btn-sm'
+                    oncontextmenu={e => showContextMenu(e, c)}
+                     onclick={(e) => {
+                       start(c)
+                       e.stopPropagation()
+                     }}>
+                      {c.name}
+                    </button>
                   )
                 }
               </For>
-            </ul>
+            </div>
           </div>
         </div>
         <div class="fixed z-100 h-screen w-screen bg-black opacity-50" onclick={() => setShow(false)}>

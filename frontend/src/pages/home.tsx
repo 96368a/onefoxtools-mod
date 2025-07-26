@@ -40,7 +40,7 @@ function Index() {
   onMount(() => {
     if (Cookies.get('init') !== 'true') {
       GetStartTime().then((t) => {
-        const startTime = new Date(t).getTime()
+        const startTime = new Date(t as unknown as string).getTime()
         const endTime = new Date().getTime()
         toast.success(`加载完成，耗时${(endTime - startTime) / 1000}秒`)
       })
@@ -68,10 +68,14 @@ function Index() {
   let contentMenuRef = document.createElement('ul') // eslint-disable-line prefer-const
   const [isShowContentMenu, setShowContentMenu] = createSignal(false)
   createEffect(() => {
-    if (isShowContentMenu())
+    if (isShowContentMenu()) {
       contentMenuRef.classList.add('z-999')
-    else
+      contentMenuRef.classList.remove('hidden')
+    }
+    else {
       contentMenuRef.classList.remove('z-999')
+      contentMenuRef.classList.add('hidden')
+    }
   })
   // 计算元素到顶部的距离
   const CalcCoord = (element: EventTarget | null): number | null => {
@@ -115,26 +119,27 @@ function Index() {
       }).catch((e) => {
         toast.error(e)
       })
-    }else{
-    const regex = /cd (.+?) &&/i
-    const match = selectedEnv().command.match(regex)
-    if (match) {
-      OpenFolderInExplorer(match[1]).then(() => {
-        toast.success('打开文件夹成功')
-        hiddenContentMenu()
-      }).catch((e) => {
-        toast.error(e)
-      })
     }
     else {
-      toast.error('未找到文件夹路径')
+      const regex = /cd (.+?) &&/i
+      const match = selectedEnv().command.match(regex)
+      if (match) {
+        OpenFolderInExplorer(match[1]).then(() => {
+          toast.success('打开文件夹成功')
+          hiddenContentMenu()
+        }).catch((e) => {
+          toast.error(e)
+        })
+      }
+      else {
+        toast.error('未找到文件夹路径')
+      }
     }
   }
-}
 
   return (
     <div onclick={hiddenContentMenu} oncontextmenu={hiddenContentMenu}>
-      <Search configs={configs} show={showSearch} setShow={setShowSearch} />
+      <Search configs={configs} show={showSearch} setShow={setShowSearch} showContextMenu={(e, c) => contentMentHandler(e, c)} hiddenContentMenu={() => hiddenContentMenu()} />
       <div class="relative">
         <ul class="absolute right-0 top-12 z--1 w-56 bg-base-200 menu rounded-box"
           ref={contentMenuRef}>
