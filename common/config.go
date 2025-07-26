@@ -283,8 +283,17 @@ func GenerateConfigByTianFox() error {
 		slog.Error("解析配置文件失败：%s\n", err)
 		return err
 	}
+	// 保持工具分类顺序
+	categorys := make([]string, 0)
 	datas := make(map[string][]Config)
 	for i, t := range tools {
+
+		if t.Category == "网页工具" {
+			continue
+		} else {
+			categorys = append(categorys, t.Category)
+		}
+
 		realPath := filepath.ToSlash(strings.TrimPrefix(t.Path, "/"))
 
 		command := filepath.Base(realPath)
@@ -323,7 +332,8 @@ func GenerateConfigByTianFox() error {
 		})
 	}
 	typeConfigs := make([]TypeConfig, 0)
-	for k, v := range datas {
+	for _, k := range categorys {
+		v := datas[k]
 		typeConfigs = append(typeConfigs, TypeConfig{
 			Type:   k,
 			Config: v,
